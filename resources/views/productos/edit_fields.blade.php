@@ -29,7 +29,7 @@
 
     <!-- Aplica IVA Field -->
     <div class="form-group col-sm-12 col-md-4">
-        {!! Form::label('aplica_iva', 'Aplica IVA:', ['class' => 'bold']) !!}
+        {!! Form::label('aplica_iva', 'IVA:', ['class' => 'bold']) !!}
         {!! Form::select('aplica_iva', ['1' => 'Sí', '0' => 'No'], $producto->aplica_iva, ['class' => 'form-control round', 'required']) !!}
     </div>
 

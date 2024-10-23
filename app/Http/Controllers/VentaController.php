@@ -25,7 +25,12 @@ class VentaController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Venta::with(['user', 'vendedor', 'pago'])->get();
+            if(Auth::user()->hasRole('superAdmin')){
+                $data = Venta::with(['user', 'vendedor', 'pago'])->get();
+            }else{
+                $data = Venta::with(['user', 'vendedor', 'pago'])->where('user_id', Auth::user()->id)->get();
+            }
+        
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('user', function($row) {

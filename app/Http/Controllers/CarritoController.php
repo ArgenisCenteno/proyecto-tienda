@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria;
 use App\Models\Producto;
 use App\Models\SubCategoria;
+use App\Models\Tasa;
 use Illuminate\Http\Request;
 use Session;
 use Alert;
@@ -51,10 +53,10 @@ class CarritoController extends Controller
     public function detalles($id)
     {
         $producto = Producto::find($id);
+        $dollar = Tasa::where('name', 'Dollar')->first();
 
 
-
-        return view('detalles')->with('producto', $producto);
+        return view('detalles')->with('producto', $producto)->with('dollar', $dollar);
     }
 
     public function agregarCarrito(Request $request, $id)
@@ -128,7 +130,7 @@ class CarritoController extends Controller
     public function checkout(Request $request)
     {
         $carrito = session()->get('cart');
-
+        $dollar = Tasa::where('name', 'Dollar')->first();
         if(!$carrito){
             Alert::error('¡Error!', 'Carrito vacío')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
             return redirect()->back();
@@ -152,10 +154,24 @@ class CarritoController extends Controller
         }
 
         $montoTotal = $impuesto + $total;
+   
 
-        return view('pagar', compact('carrito', 'total', 'montoTotal', 'impuesto'));
+        return view('pagar', compact('carrito', 'dollar', 'total', 'montoTotal', 'impuesto'));
     }
 
+
+    public function productosPorCategoria($categoriaId)
+    {
+        // Encuentra la categoría
+        $categoria = Categoria::findOrFail($categoriaId);
+
+        // Obtiene todos los productos de las subcategorías relacionadas
+        $productos = Producto::whereHas('subcategoria', function ($query) use ($categoria) {
+            $query->where('categoria_id', $categoria->id);
+        })->get();
+
+        return view('categorias', compact('productos'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -181,8 +197,8 @@ class CarritoController extends Controller
             }
         }
 
-
-        return view('carrito', compact('cart', 'total'));
+        $dollar = Tasa::where('name', 'Dollar')->first();
+        return view('carrito', compact('cart', 'total', 'dollar'));
     }
 
     /**

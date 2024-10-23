@@ -23,7 +23,8 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
             $user = Auth::user();
 
-            return redirect()->intended('/home');
+            return redirect()->route('home'); // Usa el nombre de la ruta
+
         }
 
         // Autenticación fallida

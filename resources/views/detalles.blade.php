@@ -25,9 +25,14 @@
 
                     <div class="">
                         <h2 class="mb-0 text-success">
-                            {{$producto->precio_venta}}
+                        USD{{ number_format($producto->precio_venta, 2, '.', ',') }}
+
+                           
                         </h2>
-                       
+                       <h4 class="mb-0 text-black">
+                      BS {{ number_format($producto->precio_venta * $dollar->valor, 2, '.', ',') }}
+
+                       </h4>
                     </div>
                     <div class="mt-4">
                         <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">

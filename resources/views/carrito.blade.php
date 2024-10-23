@@ -7,7 +7,6 @@
         <div class="row d-flex justify-content-between">
             <div class="col-lg-9 mb-4">
 
-
                 @if (session('cart') && count(session('cart')) > 0)
                     <section class="h-100 h-custom"
                         style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; border-radius: 16px">
@@ -35,7 +34,7 @@
                                                         </div>
                                                         <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                                                             <button type="button" class="btn btn-link px-2"
-                                                                onclick="changeQuantity({{ $key }}, -1, '{{ addslashes($item['nombre']) }}', {{ $item['precio'] }});">
+                                                                onclick="changeQuantity({{ $key }}, -1, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});">
                                                                 <i class="fas fa-minus">-</i>
                                                             </button>
 
@@ -44,14 +43,12 @@
                                                                 class="form-control form-control-sm" readonly />
 
                                                             <button type="button" class="btn btn-link px-2"
-                                                                onclick="changeQuantity({{ $key }}, 1, '{{ addslashes($item['nombre']) }}', {{ $item['precio'] }});">
+                                                                onclick="changeQuantity({{ $key }}, 1, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});">
                                                                 <i class="fas fa-plus">+</i>
                                                             </button>
                                                         </div>
                                                         <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                                            <h6 class="mb-0">{{ number_format($item['precio'], 2) }}
-                                                                <small>Bs</small>
-                                                            </h6>
+                                                            <h6 class="mb-0" id="subtotal-{{ $key }}">{{ number_format($item['precio'], 2) }} <small>Bs</small></h6>
                                                         </div>
                                                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                             <a href="#!" class="text-muted"
@@ -68,6 +65,13 @@
                                                             comprando</a>
                                                     </h6>
                                                 </div>
+                                                <div class="d-flex justify-content-between mb-5">
+                                                    <h5 class="text-uppercase">Total a pagar</h5>
+                                                    <h5 id="total-amount">{{ number_format($total + 5, 2) }} BS</h5> <!-- Total with shipping -->
+                                                </div>
+                                                <a href="{{ route('pagar') }}" class="btn btn-dark btn-block btn-lg" style="background-color: #3E2F5B; width: 100%">
+                                                    Pagar
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -78,7 +82,6 @@
                 @else
                     <p>Your cart is empty.</p>
                 @endif
-
 
             </div>
 
@@ -95,30 +98,10 @@
                                 0
                             @endif
                         </h5>
-                        <h5> {{ number_format($total, 2) }} BS</h5>
+                        <h5>{{ number_format($total, 2) }} BS</h5>
                     </div>
-
-                   
-
-                    <h5 class="text-uppercase mb-3">Código de cupon</h5>
-
-                    <div class="mb-5">
-                        <div data-mdb-input-init class="form-outline">
-                            <input type="text" id="promoCode" class="form-control form-control-lg" />
-                            <label class="form-label" for="promoCode">Ingresa el código</label>
-                        </div>
-                    </div>
-
+                    
                     <hr class="my-4">
-
-                    <div class="d-flex justify-content-between mb-5">
-                        <h5 class="text-uppercase">Total a pagar</h5>
-                        <h5> {{ number_format($total + 5, 2) }} BS</h5> <!-- Assuming standard shipping fee -->
-                    </div>
-
-                    <a href="{{ route('pagar') }}" class="btn btn-dark btn-block btn-lg" style="background-color: #3E2F5B; width: 100%">
-                        Pagar
-                    </a>
                 </div>
             </div>
 
@@ -128,42 +111,42 @@
 
 @endsection
 @include('layout.script')
-<script src="{{asset('js/sweetalert2.js')}}"></script>
+<script src="{{ asset('js/sweetalert2.js') }}"></script>
 <script>
 
     function updateSubtotal(index, price) {
-
-        // Obtener cantidad
         var quantity = document.getElementById('quantity-' + index).value;
-
-        // Calcular el nuevo subtotal
         var subtotal = quantity * price;
-        // changeQuantity(index, quantity, product, price)
-        // Actualizar la visualización del subtotal
-        document.getElementById('subtotal-' + index).innerText = 'Subtotal: ' + subtotal.toFixed(2) + ' Bs';
+        document.getElementById('subtotal-' + index).innerText = subtotal.toFixed(2) + ' Bs';
+    }
 
+    function updateTotalAmount() {
+        let totalAmount = 0;
+        const cartItems = document.querySelectorAll('[id^="quantity-"]'); // Select all quantity inputs
+
+        cartItems.forEach(item => {
+            const index = item.id.split('-')[1];
+            const quantity = parseInt(item.value);
+            const price = parseFloat(document.querySelector(`#subtotal-${index}`).innerText.split(' ')[0]); // Get the subtotal
+            totalAmount += price * quantity; // Update the total
+        });
+
+        // Update the display for total amount
+        document.getElementById('total-amount').innerText = totalAmount.toFixed(2) + ' BS'; // Update total display
     }
 
     function changeQuantity(index, change, product, price) {
-        // Obtener el input de cantidad
         var quantityInput = document.getElementById('quantity-' + index);
-        //console.log(product)
-
-        // Calcular la nueva cantidad
         var newQuantity = parseInt(quantityInput.value) + change;
 
-        // Asegurarse de que la cantidad no sea menor a 1
         if (newQuantity < 1) {
             newQuantity = 1;
         }
 
-        // Actualizar el valor del input
         quantityInput.value = newQuantity;
-
-        // Llamar a la función para actualizar el subtotal
         updateSubtotal(index, price);
+        updateTotalAmount(); // Update total amount when quantity changes
 
-        // Hacer la solicitud AJAX para actualizar la cantidad en la sesión
         fetch('{{ route("carrito.actualizar") }}', {
             method: 'POST',
             headers: {
@@ -175,14 +158,21 @@
                 cantidad: newQuantity
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log(data.message);
-                } else {
-                    console.error(data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(data.message);
+            } else {
+                console.error(data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
+
+    function removeFromCart(index) {
+        // Implement remove functionality
+        console.log('Removing item at index:', index);
+        // Make an AJAX call to remove item from the cart and refresh the page or update the cart view
+    }
+
 </script>

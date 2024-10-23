@@ -12,7 +12,7 @@
           <form method="POST" action="{{ route('login') }}" style="width: 23rem;">
             @csrf <!-- Agregar token CSRF obligatorio -->
 
-            <h3 class="fw-normal mb-3 pb-3 text-center" style="letter-spacing: 1px;">Sharly Online</h3>
+            <h3 class="fw-normal mb-3 pb-3 text-center" style="letter-spacing: 1px;">Sharli Online</h3>
 
             <!-- Campo de correo electrónico -->
             <div class="form-outline mb-4">

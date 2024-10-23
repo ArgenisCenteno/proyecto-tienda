@@ -2,9 +2,9 @@
     {!! Form::open(['route' => ['tasas.destroy', $id], 'method' => 'delete', 'class' => 'btn-delete']) !!}
     <div class='btn-group'>
         <a href="{{ route('tasas.edit', [$id]) }}" class='btn btn-info' data-bs-toggle="tooltip"
-            data-bs-placement="top" title="Editar"><span class="material-icons">edit</span></a>
+            data-bs-placement="top" title="Editar"><span >Editar</span></a>
            
-        {!! Form::button('<span class="material-icons">delete</span>', ['type' => 'submit', 'class' =>
+        {!! Form::button('<span >Eliminar</span>', ['type' => 'submit', 'class' =>
         'btn btn-danger', 'data-bs-toggle' => 'tooltip', 'data-bs-placement' => 'top', 'title' => 'Eliminar']) !!}
     </div>
     {!! Form::close() !!}

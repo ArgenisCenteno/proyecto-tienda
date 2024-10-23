@@ -16,8 +16,7 @@
         <div class="form-group col-sm-12 col-md-4">
             {!! Form::label('precio_compra', 'Precio Compra:', ['class' => 'bold']) !!}
             {!! Form::number('precio_compra', null, ['class' => 'form-control round', 'step' => '0.01', 'id' => 'precio_compra', 'required']) !!}
-            <p id="precio_compra_error" style="color: red; display: none;">El precio de compra no puede ser negativo.
-            </p>
+            <p id="precio_compra_error" style="color: red; display: none;">El precio de compra no puede ser negativo.</p>
         </div>
     </div>
 
@@ -148,3 +147,30 @@
     });
 </script>
 <script src="{{asset('js/sweetalert2.js')}}"></script>
+<script>
+    function confirmSubmission(event) {
+        const precioCompra = parseFloat(document.getElementById('precio_compra').value);
+        const precioVenta = parseFloat(document.getElementById('precio_venta').value);
+
+        // Validate prices
+        if (precioCompra < 0) {
+            document.getElementById('precio_compra_error').style.display = 'block';
+            event.preventDefault(); // Prevent form submission
+        } else {
+            document.getElementById('precio_compra_error').style.display = 'none';
+        }
+
+        if (precioVenta < 0) {
+            document.getElementById('precio_venta_error').style.display = 'block';
+            event.preventDefault(); // Prevent form submission
+        } else {
+            document.getElementById('precio_venta_error').style.display = 'none';
+        }
+
+        // Check if selling price is greater than purchase price
+        if (precioVenta <= precioCompra) {
+            alert('El precio de venta debe ser mayor al precio de compra.');
+            event.preventDefault(); // Prevent form submission
+        }
+    }
+</script>

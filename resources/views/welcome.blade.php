@@ -54,29 +54,7 @@
   </button>
 </div>
 <!-- Carousel wrapper -->
-<div class="container mt-4">
-  <h2 class="text-center mt-4 mb-4">¡Nuestras Ofertas!</h2>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    @foreach ($productos as $producto) <!-- Itera sobre los productos -->
-      <div class="col">
-        <div class="card " style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;">
-          <a href="{{ route('detalles', $producto->id) }}">
-            <img src="{{ $producto->imagenes->first()->url }}" class="card-img-top" alt="{{ $producto->nombre }}" />
-          </a>
-          <div class="card-body">
-            <h5 class="card-title">
-              <a href="{{ route('detalles', $producto->id) }}" class="text-dark"><strong>{{ $producto->nombre }}</strong></a>
-            </h5> <!-- Nombre del producto -->
-            <br>
-            <br>
-            <p class="card-text text-success">Precio: <strong>{{ $producto->precio_venta }} BS</strong></p> <!-- Precio del producto -->
-            <p class="card-text">{{ $producto->descripcion }}</p> <!-- Descripción del producto -->
-          </div>
-        </div>
-      </div>
-    @endforeach
-  </div>
-</div>
+
 
 
 

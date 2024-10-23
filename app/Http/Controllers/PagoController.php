@@ -25,8 +25,14 @@ class PagoController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Pago::with(['user', 'compras', 'ventas'])->get();
+           
 
+            if(Auth::user()->hasRole('superAdmin')){
+                $data = Pago::with(['user', 'compras', 'ventas'])->get();
+            }else{
+                $data = Pago::with(['user', 'compras', 'ventas'])
+                ->where('creado_id', Auth::user()->id)->get();
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -154,7 +160,7 @@ class PagoController extends Controller
         $total = 0;
         $impuesto = 0;
         $montoTotal = 0;
-
+        $dollar = Tasa::where('name', 'Dollar')->first();
 
 
         if (count($carrito) > 0) {
@@ -170,7 +176,7 @@ class PagoController extends Controller
             }
         }
 
-        $montoTotal = $impuesto + $total;
+        $montoTotal = $impuesto + $total * $dollar->valor;
 
         if ($request->hasFile('comprobante')) {
             $comprobante = $request->file('comprobante');

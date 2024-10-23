@@ -14,7 +14,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
         rel="stylesheet">
-    <title>{{ config('app.name', 'Farmagarca') }}</title>
+    <title>{{ config('app.name', 'Sharli') }}</title>
 
     <!-- Fonts -->
     <style>
@@ -41,12 +41,12 @@
         }
 
         .no-underline {
-    text-decoration: none;
-}
+            text-decoration: none;
+        }
 
-.no-underline:hover {
-    text-decoration: none;
-}
+        .no-underline:hover {
+            text-decoration: none;
+        }
     </style>
 
     <!-- Scripts -->
@@ -64,33 +64,27 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a href="{{ url('/') }}"> <strong class="navbar-brand text-white">Sharly</strong></a>
+                <a href="{{ url('/') }}"> <strong class="navbar-brand text-white">Sharli</strong></a>
 
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">Damas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">Caballeros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">Niños</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">Accesorios</a>
-                        </li>
+                        @foreach($categorias as $categoria)
+                            <li class="nav-item">
+                                <a class="nav-link text-white"
+                                    href="{{ route('productosPorCategoria', $categoria->id) }}">{{ $categoria->nombre }}</a>
+                            </li>
+                        @endforeach
                     </ul>
                     <div class="d-flex align-items-center">
                         <a class="text-reset me-3" href="#">
                             <i class="fas fa-shopping-cart"></i>
                         </a>
-                        <a href="{{ route('carrito.show') }}" class="text-white me-3 no-underline" >
-                                Mi Cesta
-                            </a>
+                        <a href="{{ route('carrito.show') }}" class="text-white me-3 no-underline">
+                            Mi Cesta
+                        </a>
                         @auth
-                            <a href="{{ route('home') }}" class="text-white me-3 no-underline" >
+                            <a href="{{ route('home') }}" class="text-white me-3 no-underline">
                                 Mi perfil
                             </a>
                             <a href="{{ route('logout') }}" class="text-white me-3 no-underline"
@@ -176,7 +170,7 @@
         <!-- Copyright -->
         <div class="text-center p-3" style="background-color: #000F08; color: white;">
             © 2024 Copyright:
-            <a class="text-body" href="#"> <span class="">Sharly Cuchi Moda C.A</span> </a>
+            <a class="text-body" href="#"> <span class="">Sharli Cuchi Moda C.A</span> </a>
         </div>
         <!-- Copyright -->
     </footer>

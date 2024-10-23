@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    $productos = Producto::with('imagenes')->limit(6)->get(); // Obtener 6 productos de la base de datos
-    return view('welcome', compact('productos'));
+   // Obtener 6 productos de la base de datos
+    return view('welcome' );
 });
 Route::get('/products', [CarritoController::class, 'products'])->name('products');
 Route::get('/detalles/{id}', [CarritoController::class, 'detalles'])->name('detalles');
@@ -34,6 +34,7 @@ Route::post('/agregar/{id}', [CarritoController::class, 'agregarCarrito'])->name
 Route::get('/carrito', [CarritoController::class, 'show'])->name('carrito.show');
 Route::post('/carrito/actualizar', [CarritoController::class, 'actualizarCarrito'])->name('carrito.actualizar');
 
+Route::get('/category/{id}', [CarritoController::class, 'productosPorCategoria'])->name('productosPorCategoria');
 
 
 Route::middleware(['auth'])->group(function () {
