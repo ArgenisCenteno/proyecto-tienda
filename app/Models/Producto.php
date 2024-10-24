@@ -47,5 +47,9 @@ class Producto extends Model
         return $this->hasMany(ImagenProducto::class, 'producto_id');
     }
 
-  
+    public function promocion()
+    {
+        return $this->belongsToMany(Promocion::class, 'promocion_producto', 'producto_id', 'promocion_id')
+                    ->withTimestamps(); // Añadir timestamps si los necesitas
+    }
 }

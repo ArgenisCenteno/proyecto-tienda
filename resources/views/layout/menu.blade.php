@@ -66,7 +66,11 @@
                         <p>Monedas</p>
                     </a>
                 </li>
-           
+                <li class="nav-item">
+                    <a href="{{route('promociones.historia')}}" class="nav-link">
+                        <p>Promociones</p>
+                    </a>
+                </li>
                
              
                

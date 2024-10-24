@@ -21,6 +21,7 @@
                                         <option value="" disabled selected>Seleccione un método de pago</option>
                                         <option value="Pago movil">Pago móvil</option>
                                         <option value="Transferencia">Transferencia</option>
+                                        <option value="Efectivo">Efectivo (Pagar en tienda)</option>
                                     </select>
                                 </div>
 
@@ -44,7 +45,7 @@
                                         <option value="Banco Activo">Banco Activo</option>
                                         <option value="Banco Agrícola de Venezuela">Banco Agrícola de Venezuela</option>
                                         <option value="100% Banco">100% Banco</option>
-  
+
                                     </select>
                                 </div>
 
@@ -74,20 +75,23 @@
                                 </div>
                             </div>
                             <div class="row g-4 mt-4">
-    <div class="col-md-4 text-center">
-        <p class="fw-bold mb-0 text-muted">Total:</p>
-        <p class="text-primary mb-0 fw-bold">{{ number_format($total * $dollar->valor, 2) }} Bs</p>
-    </div>
-    <div class="col-md-4 text-center">
-        <p class="fw-bold mb-0 text-muted">Impuesto:</p>
-        <p class="text-primary mb-0 fw-bold">{{ number_format($impuesto * $dollar->valor, 2) }} Bs</p>
-    </div>
-    <div class="col-md-4 text-center">
-        <p class="fw-bold mb-0 text-muted">Monto a Pagar:</p>
-        <p class="text-primary mb-0 fw-bold">{{ number_format($montoTotal * $dollar->valor, 2) }} Bs</p>
-        <input type="hidden" name="montoTotal" value="{{ $montoTotal * $dollar->valor }}">
-    </div>
-</div>
+                                <div class="col-md-4 text-center">
+                                    <p class="fw-bold mb-0 text-muted">Total:</p>
+                                    <p class="text-primary mb-0 fw-bold">{{ number_format($total * $dollar->valor, 2) }}
+                                        Bs</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <p class="fw-bold mb-0 text-muted">Impuesto:</p>
+                                    <p class="text-primary mb-0 fw-bold">
+                                        {{ number_format($impuesto * $dollar->valor, 2) }} Bs</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <p class="fw-bold mb-0 text-muted">Monto a Pagar:</p>
+                                    <p class="text-primary mb-0 fw-bold">
+                                        {{ number_format($montoTotal * $dollar->valor, 2) }} Bs</p>
+                                    <input type="hidden" name="montoTotal" value="{{ $montoTotal * $dollar->valor }}">
+                                </div>
+                            </div>
 
 
                             <button type="submit" class="btn btn-primary w-100 py-3 shadow-sm mt-4">Realizar

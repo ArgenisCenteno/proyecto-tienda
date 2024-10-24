@@ -63,50 +63,55 @@ class CarritoController extends Controller
     {
         // Retrieve the product based on ID
         $producto = Producto::find($id);
-
+    
         if (!$producto) {
             return redirect()->back()->with('error', 'Producto no encontrado');
         }
-
-
-
-        // Create a cart item
+    
+        // Verificar si hay alguna promoción activa para el producto
+        $precioConDescuento = $producto->precio_venta; // Precio base
+        foreach ($producto->promocion as $promocion) {
+            if ($promocion->fecha_inicio <= now() && $promocion->fecha_fin >= now()) {
+                // Aplicar el descuento si la promoción está activa
+                $precioConDescuento = $producto->precio_venta - ($producto->precio_venta * $promocion->descuento / 100);
+                break; // Usar la primera promoción activa que encuentre
+            }
+        }
+    
+        // Crear el item del carrito
         $cartItem = [
             'id' => $producto->id,
             'nombre' => $producto->nombre,
             'cantidad' => 1,
-            'precio' => $producto->precio_venta,
-            'imagen' => asset($producto->imagenes[0]->url) // Use the first image
+            'precio' => $precioConDescuento, // Usar el precio con descuento si aplica
+            'imagen' => asset($producto->imagenes[0]->url) // Usar la primera imagen
         ];
-
-        // Get existing cart from session
+    
+        // Obtener el carrito existente de la sesión
         $cart = Session::get('cart', []);
-
+    
+        // Verificar si el producto ya está en el carrito
         if (count($cart) > 0) {
             foreach ($cart as $key => $item) {
                 if ($item['nombre'] === $producto->nombre) {
-                    $cart[$key]['cantidad'] += 1; // Update quantity
+                    // Si el producto ya está en el carrito, aumentar la cantidad
+                    $cart[$key]['cantidad'] += 1;
                     session()->put('cart', $cart);
-                    Alert::success('¡Exito!', 'Se aumento la cantidad del producto ya existente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+                    Alert::success('¡Éxito!', 'Se aumentó la cantidad del producto ya existente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
                     return redirect()->back();
-                } else {
-                    // Add product to the cart
-                    $cart[] = $cartItem;
-
                 }
             }
-        } else {
-            $cart[] = $cartItem;
         }
-
-
-
-
-        // Save the cart back to session
+    
+        // Si el producto no está en el carrito, agregarlo
+        $cart[] = $cartItem;
+    
+        // Guardar el carrito de nuevo en la sesión
         Session::put('cart', $cart);
-        Alert::success('¡Exito!', 'Producto agregado al carrito')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+        Alert::success('¡Éxito!', 'Producto agregado al carrito')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
         return redirect()->back();
     }
+    
 
     public function actualizarCarrito(Request $request)
     {

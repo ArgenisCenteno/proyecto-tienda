@@ -123,14 +123,15 @@ class PagoController extends Controller
         $pago->save(); // Save the changes
 
         $venta = Venta::where('pago_id', $id)->first();
-        $recibo = Recibo::where('pago_id', $id)->first();
+       // $recibo = Recibo::where('pago_id', $id)->first();
+     //   dd($recibo);
 
-        if (($request->status == 'Pagado' || $request->status == 'Rechazado') && $pago->tipo == 'Venta') {
+        if (($request->status == 'Pagado' || $request->status == 'Rechazado' && $request->status != null && $venta && $recibo)) {
             $venta->status = $request->status;
             $venta->save();
 
-            $recibo->estatus = $request->status;
-            $recibo->save();
+           // $recibo->status = $request->status;
+          //  $recibo->save();
         }
 
         Alert::success('¡Exito!', 'Pago actualizado exitosamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');

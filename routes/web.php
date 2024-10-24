@@ -9,6 +9,7 @@ use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\VentaController;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,10 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/pagar', [CarritoController::class, 'checkout'])->name('pagar');
 Route::post('/pagarCuenta', [PagoController::class, 'pagarCuenta'])->name('pagarCuenta');
 
+Route::get('/historia', [PromocionController::class, 'index'])->name('promociones.historia');
+Route::get('/promo/{id}', [PromocionController::class, 'show'])->name('promociones.show');
+Route::get('/promociones', [PromocionController::class, 'create'])->name('promociones.create');
+Route::post('/promociones', [PromocionController::class, 'store'])->name('promociones.store');
 //Notificaciones
 
 Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');

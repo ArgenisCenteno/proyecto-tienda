@@ -67,7 +67,7 @@
                                                 </div>
                                                 <div class="d-flex justify-content-between mb-5">
                                                     <h5 class="text-uppercase">Total a pagar</h5>
-                                                    <h5 id="total-amount">{{ number_format($total + 5, 2) }} BS</h5> <!-- Total with shipping -->
+                                                    <h5 id="total-amount">{{ number_format($total, 2) }} BS</h5> <!-- Total with shipping -->
                                                 </div>
                                                 <a href="{{ route('pagar') }}" class="btn btn-dark btn-block btn-lg" style="background-color: #3E2F5B; width: 100%">
                                                     Pagar
