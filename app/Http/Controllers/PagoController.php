@@ -253,6 +253,7 @@ class PagoController extends Controller
             $detalleVenta->id_producto = $producto['id'];
             $detalleVenta->precio_producto = $producto['precio'];
             $detalleVenta->cantidad = $producto['cantidad'];
+            $detalleVenta->talla = $producto['talla'];
             $detalleVenta->neto = $producto['precio'] * $producto['cantidad'];
 
             $consulta = Producto::find($c['id']);

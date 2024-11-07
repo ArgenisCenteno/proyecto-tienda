@@ -140,6 +140,7 @@
             </section>
             <!-- Section: Social media -->
         </div>
+       
         <!-- Grid container -->
         <div class="container-fluid mt-5" style="width: 100%; padding: 0;">
             <div class="card " style="width: 100%; background-color: #136F63; color: white">
@@ -167,6 +168,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Copyright -->
         <div class="text-center p-3" style="background-color: #000F08; color: white;">
             © 2024 Copyright:

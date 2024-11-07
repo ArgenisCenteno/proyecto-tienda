@@ -9,21 +9,32 @@
                 <div class="col-md-4">
                     <a href="{{ route('detalles', $similar->id) }}" class="text-decoration-none">
                         <div class="card h-100 shadow-sm p-3">
-                            <img src="{{ $similar->imagenes->first()->url }}" style="height: 400px;"
+                            <img src="{{ $similar->imagenes->first()->url }}" style="height: 400px;" 
                                 class="card-img-top" alt="...">
                             <div class="label-top shadow-sm">{{ $similar->nombre }}</div>
                             <div class="card-body">
-                               
                                 <h5 class="card-title">{{ $similar->descripcion }}</h5>
-                                <div class="text-center my-4">
-                                    <!-- Any additional content can go here -->
-                                </div>
+                                
+                                <!-- Displaying sizes (tallas) if available -->
+                                @if($similar->tallas && $similar->tallas->count() > 0)
+                                    <div class="mb-3 text-right">
+                                        <h6 class="text-muted">Tallas Disponibles:</h6>
+                                        <ul class="list-unstyled">
+                                            @foreach($similar->tallas as $talla)
+                                                <li>{{ $talla->talla }} ({{ $talla->cantidad }} disponibles)</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @else
+                                    <p class="text-muted">No hay tallas disponibles</p>
+                                @endif
+
                                 <div class="clearfix mb-1">
                                     <span class="float-end"><i class="fas fa-plus"></i></span>
                                     <span class="float-start"></span>
                                 </div>
                                 <div class="clearfix mb-3">
-                                    <span class="float-end">{{ $similar->precio_venta }}</span>
+                                    <span class="float-end">{{ $similar->precio_venta }} $</span>
                                 </div>
                             </div>
                         </div>

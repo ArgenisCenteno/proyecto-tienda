@@ -30,7 +30,7 @@
                                                         </div>
                                                         <div class="col-md-3 col-lg-3 col-xl-3">
                                                             <h6 class="text-muted">{{ $item['nombre'] }}</h6>
-                                                            <h6 class="mb-0">{{ $item['nombre'] }}</h6>
+                                                            <h6 class="mb-0">{{ $item['talla'] }}</h6>
                                                         </div>
                                                         <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                                                             <button type="button" class="btn btn-link px-2"
@@ -48,7 +48,8 @@
                                                             </button>
                                                         </div>
                                                         <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                                            <h6 class="mb-0" id="subtotal-{{ $key }}">{{ number_format($item['precio'], 2) }} <small>Bs</small></h6>
+                                                            <h6 class="mb-0" id="subtotal-{{ $key }}">
+                                                                {{ number_format($item['precio'], 2) }} <small>$</small></h6>
                                                         </div>
                                                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                             <a href="#!" class="text-muted"
@@ -67,9 +68,11 @@
                                                 </div>
                                                 <div class="d-flex justify-content-between mb-5">
                                                     <h5 class="text-uppercase">Total a pagar</h5>
-                                                    <h5 id="total-amount">{{ number_format($total, 2) }} BS</h5> <!-- Total with shipping -->
+                                                    <h5 id="total-amount">{{ number_format($total, 2) }} $</h5>
+                                                    <!-- Total with shipping -->
                                                 </div>
-                                                <a href="{{ route('pagar') }}" class="btn btn-dark btn-block btn-lg" style="background-color: #3E2F5B; width: 100%">
+                                                <a href="{{ route('pagar') }}" class="btn btn-dark btn-block btn-lg"
+                                                    style="background-color: #3E2F5B; width: 100%">
                                                     Pagar
                                                 </a>
                                             </div>
@@ -88,6 +91,10 @@
             <div class="col-lg-3 bg-body-tertiary">
                 <div class="p-5">
                     <h3 class="fw-bold mb-5 mt-2 pt-1">Mi cuenta</h3>
+                    @if(Auth::check())
+                        <p>, {{ Auth::user()->name }}!</p>
+                    @endif
+
                     <hr class="my-4">
 
                     <div class="d-flex justify-content-between mb-4">
@@ -98,9 +105,10 @@
                                 0
                             @endif
                         </h5>
-                        <h5>{{ number_format($total, 2) }} BS</h5>
+
                     </div>
-                    
+                    <br>
+                    <h5>Tasa del Dollar {{ number_format($dollar, 2) }} $</h5>
                     <hr class="my-4">
                 </div>
             </div>
@@ -117,7 +125,7 @@
     function updateSubtotal(index, price) {
         var quantity = document.getElementById('quantity-' + index).value;
         var subtotal = quantity * price;
-        document.getElementById('subtotal-' + index).innerText = subtotal.toFixed(2) + ' Bs';
+        document.getElementById('subtotal-' + index).innerText = subtotal.toFixed(2) + ' $';
     }
 
     function updateTotalAmount() {
@@ -132,7 +140,7 @@
         });
 
         // Update the display for total amount
-        document.getElementById('total-amount').innerText = totalAmount.toFixed(2) + ' BS'; // Update total display
+        document.getElementById('total-amount').innerText = totalAmount.toFixed(2) + ' $'; // Update total display
     }
 
     function changeQuantity(index, change, product, price) {
@@ -158,15 +166,15 @@
                 cantidad: newQuantity
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log(data.message);
-            } else {
-                console.error(data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.message);
+                } else {
+                    console.error(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     function removeFromCart(index) {

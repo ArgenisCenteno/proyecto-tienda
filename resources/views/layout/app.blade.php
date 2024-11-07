@@ -13,6 +13,11 @@
     .text-primary {
         color: #3E2F5B !important; /* Cambia el texto si usas .text-primary */
     }
+    th{
+    background-color: #3e3453  !important;
+    color: white !important;
+}
+
 </style>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary bg-white">

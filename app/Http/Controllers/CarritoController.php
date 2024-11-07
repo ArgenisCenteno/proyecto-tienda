@@ -51,9 +51,18 @@ class CarritoController extends Controller
     }
 
     public function detalles($id)
-    {
+    {  
+        $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
+       
+        // dd();
+         if($response){
+             $dato = json_decode($response);
+             $dollar = $dato->promedio;
+         }else{
+             $dollar = 42.30;
+         }
         $producto = Producto::find($id);
-        $dollar = Tasa::where('name', 'Dollar')->first();
+       // $dollar = Tasa::where('name', 'Dollar')->first();
 
 
         return view('detalles')->with('producto', $producto)->with('dollar', $dollar);
@@ -66,6 +75,24 @@ class CarritoController extends Controller
     
         if (!$producto) {
             return redirect()->back()->with('error', 'Producto no encontrado');
+        }
+    
+        // Get the selected size from the request
+        $tallaSeleccionada = $request->talla;
+    
+        // Verificar si el producto tiene tallas y si la talla seleccionada está disponible
+        if ($producto->tallas && $producto->tallas->count() > 0) {
+            $tallaDisponible = $producto->tallas->where('talla', $tallaSeleccionada)->first();
+    
+            if (!$tallaDisponible || $tallaDisponible->cantidad <= 0) {
+                Alert::error('¡Error!', 'La talla seleccionada no está disponible o está agotada')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+
+                return redirect()->back()->with('error', 'La talla seleccionada no está disponible o está agotada');
+            }
+        } else {
+            Alert::error('¡Error!', 'No hay tallas disponibles')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+
+            return redirect()->back()->with('error', 'Este producto no tiene tallas disponibles');
         }
     
         // Verificar si hay alguna promoción activa para el producto
@@ -83,6 +110,7 @@ class CarritoController extends Controller
             'id' => $producto->id,
             'nombre' => $producto->nombre,
             'cantidad' => 1,
+            'talla' => $tallaSeleccionada,
             'precio' => $precioConDescuento, // Usar el precio con descuento si aplica
             'imagen' => asset($producto->imagenes[0]->url) // Usar la primera imagen
         ];
@@ -93,7 +121,7 @@ class CarritoController extends Controller
         // Verificar si el producto ya está en el carrito
         if (count($cart) > 0) {
             foreach ($cart as $key => $item) {
-                if ($item['nombre'] === $producto->nombre) {
+                if ($item['nombre'] === $producto->nombre && $item['talla'] === $tallaSeleccionada) {
                     // Si el producto ya está en el carrito, aumentar la cantidad
                     $cart[$key]['cantidad'] += 1;
                     session()->put('cart', $cart);
@@ -135,7 +163,15 @@ class CarritoController extends Controller
     public function checkout(Request $request)
     {
         $carrito = session()->get('cart');
-        $dollar = Tasa::where('name', 'Dollar')->first();
+        $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
+       
+        // dd();
+         if($response){
+             $dato = json_decode($response);
+             $dollar = $dato->promedio;
+         }else{
+             $dollar = 42.30;
+         }
         if(!$carrito){
             Alert::error('¡Error!', 'Carrito vacío')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
             return redirect()->back();
@@ -192,7 +228,15 @@ class CarritoController extends Controller
     public function show()
     {
         $cart = Session::get('cart', []);
-
+        $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
+       
+        // dd();
+         if($response){
+             $dato = json_decode($response);
+             $dollar = $dato->promedio;
+         }else{
+             $dollar = 42.30;
+         }
 
         $total = 0;
 
@@ -202,7 +246,6 @@ class CarritoController extends Controller
             }
         }
 
-        $dollar = Tasa::where('name', 'Dollar')->first();
         return view('carrito', compact('cart', 'total', 'dollar'));
     }
 

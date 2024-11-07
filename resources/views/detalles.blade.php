@@ -1,5 +1,7 @@
 @extends('layouts.app')
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
+
 @section('content')
 <section class="content">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -17,47 +19,67 @@
                     </h4>
 
                     <div class="">
-    @php
-        $precioDescuento = null;
-    @endphp
+                        @php
+                            $precioDescuento = null;
+                        @endphp
 
-    @foreach ($producto->promocion as $promocion)
-        @if ($promocion->fecha_inicio <= now() && $promocion->fecha_fin >= now())
-            @php
-                $precioDescuento = $producto->precio_venta - ($producto->precio_venta * $promocion->descuento / 100);
-                break; // Salir del bucle al encontrar la primera promoción activa
-            @endphp
-        @endif
-    @endforeach
+                        @foreach ($producto->promocion as $promocion)
+                            @if ($promocion->fecha_inicio <= now() && $promocion->fecha_fin >= now())
+                                @php
+                                    $precioDescuento = $producto->precio_venta - ($producto->precio_venta * $promocion->descuento / 100);
+                                    break; // Salir del bucle al encontrar la primera promoción activa
+                                @endphp
+                            @endif
+                        @endforeach
 
-    @if ($precioDescuento)
-        <h2 class="text-danger mb-0">
-            USD {{ number_format($precioDescuento, 2, '.', ',') }} <small>(Descuento aplicado)</small>
-        </h2>
-        <h4 class="text-muted">
-            <s>USD {{ number_format($producto->precio_venta, 2, '.', ',') }}</s>
-        </h4>
-    @else
-        <h2 class="text-success mb-0">
-            USD {{ number_format($producto->precio_venta, 2, '.', ',') }}
-        </h2>
-    @endif
+                        @if ($precioDescuento)
+                            <h2 class="text-danger mb-0">
+                                 {{ number_format($precioDescuento, 2, '.', ',') }}$ <small>(Descuento aplicado)</small>
+                            </h2>
+                            <h4 class="text-muted">
+                                <s> {{ number_format($producto->precio_venta, 2, '.', ',') }} $</s>
+                            </h4>
+                        @else
+                            <h2 class="text-success mb-0">
+                                 {{ number_format($producto->precio_venta, 2, '.', ',')  }} $
+                            </h2>
+                        @endif
 
-    <h4 class="text-black">
-        BS {{ number_format($producto->precio_venta * $dollar->valor, 2, '.', ',') }}
-    </h4>
-</div>
+                        <h4 class="text-black">
+                              {{ number_format($producto->precio_venta * $dollar, 2, '.', ',') }} BS
+                        </h4>
+                        <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST" id="formAgregarCarrito">
 
+                        <!-- Aquí añadimos el check de tallas -->
+                        <div class="mt-3">
+                            <h5 class="mb-3">Selecciona una talla:</h5>
+                            @foreach ($producto->tallas as $talla)
+                                <div class="form-check">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="radio" 
+                                        name="talla" 
+                                        id="talla{{ $talla->id }}" 
+                                        value="{{ $talla->talla }}" 
+                                        {{ $talla->cantidad == 0 ? 'disabled' : '' }}
+                                        {{ $loop->first && $talla->cantidad > 0 ? 'checked' : '' }}
+                                    >
+                                    <label class="form-check-label" for="talla{{ $talla->id }}">
+                                        {{ $talla->talla }} - {{ $talla->cantidad }} disponibles
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
 
                     <div class="mt-4">
-                        <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-primary" style="background-color: #3E2F5B; border:none; width: 100%; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
                                 Añadir a la cesta
                             </button>
-                        </form>
+                        
                     </div>
-
+                    </form>
                     <div class="mt-4 product-share">
                         <a href="#" class="text-gray">
                             <i class="fab fa-facebook-square fa-2x"></i>
@@ -96,7 +118,6 @@
                             </a>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -104,7 +125,37 @@
 </section>
 
 @endsection
+
 @include('layout.script')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/adminlte.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        $('#formAgregarCarrito').on('submit', function(e) {
+            // Verificar si la talla seleccionada tiene cantidad cero
+            let tallaSeleccionada = $('input[name="talla"]:checked');
+            if (tallaSeleccionada.length === 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor selecciona una talla disponible.',
+                });
+            } else {
+                let cantidadDisponible = tallaSeleccionada.data('cantidad');
+                if (cantidadDisponible === 0) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Sin Stock',
+                        text: 'La talla seleccionada no tiene stock disponible.',
+                    });
+                }
+            }
+        });
+    });
+</script>
+

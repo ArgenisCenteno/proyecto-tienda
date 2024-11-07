@@ -7,7 +7,7 @@
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio </th>
-                <th>Cantidad</th>
+               
                 <th>Subcategoría</th>
                 <th>Disponible</th>
                 <th>Opciones</th>
@@ -41,9 +41,8 @@
    
                 { data: 'precio_venta', name: 'precio_venta' },
              
-                { data: 'cantidad', name: 'cantidad' },
-                { data: 'subCategoria', name: 'subCategoria' }, 
-                { data: 'disponible', name: 'disponible' },
+                 { data: 'subCategoria', name: 'subCategoria' }, 
+                { data: 'disponibles', name: 'disponibles' },
                 { data: 'actions', name: 'actions', searchable: true, orderable: true }
             ],
             order: [[0, 'desc']],

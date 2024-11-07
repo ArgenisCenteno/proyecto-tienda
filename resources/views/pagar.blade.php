@@ -21,14 +21,14 @@
                                         <option value="" disabled selected>Seleccione un método de pago</option>
                                         <option value="Pago movil">Pago móvil</option>
                                         <option value="Transferencia">Transferencia</option>
-                                        <option value="Efectivo">Efectivo (Pagar en tienda)</option>
+                                        <option value="Pagar en tienda">Pagar en tienda</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="banco_origen" class="form-label text-muted">Banco de Origen</label>
                                     <select class="form-select border-0 shadow-sm p-3" id="banco_origen"
-                                        name="banco_origen" required style="background-color: #ECF0F1;">
+                                        name="banco_origen"  style="background-color: #ECF0F1;">
                                         <option value="" disabled selected>Selecciona tu banco de origen</option>
                                         <option value="Banesco">Banesco</option>
                                         <option value="Banco de Venezuela">Banco de Venezuela</option>
@@ -52,8 +52,8 @@
                                 <div class="col-md-6">
                                     <label for="banco_destino" class="form-label text-muted">Banco de Destino</label>
                                     <select class="form-select border-0 shadow-sm p-3" id="banco_destino"
-                                        name="banco_destino" required style="background-color: #ECF0F1;">
-                                        <option value="" disabled selected>Selecciona tu banco de destino</option>
+                                        name="banco_destino"  style="background-color: #ECF0F1;">
+                                        <option value=""  selected>Selecciona tu banco de destino</option>
                                         <option value="Mercantil">Mercantil</option>
                                         <option value="Banco de Venezuela">Banco de Venezuela</option>
                                     </select>
@@ -64,32 +64,32 @@
                                         Referencia</label>
                                     <input type="text" class="form-control border-0 shadow-sm p-3"
                                         id="numero_referencia" name="numero_referencia" maxlength="8"
-                                        placeholder="12345678" pattern="\d{8}" title="Debe tener 8 dígitos" required
+                                        placeholder="12345678" pattern="\d{8}" title="Debe tener 8 dígitos" 
                                         style="background-color: #ECF0F1;">
                                 </div>
 
                                 <div class="col-md-12">
                                     <label for="comprobante" class="form-label text-muted">Comprobante de Pago</label>
                                     <input type="file" class="form-control border-0 shadow-sm p-3" id="comprobante"
-                                        name="comprobante" required style="background-color: #ECF0F1;">
+                                        name="comprobante"  style="background-color: #ECF0F1;">
                                 </div>
                             </div>
                             <div class="row g-4 mt-4">
                                 <div class="col-md-4 text-center">
                                     <p class="fw-bold mb-0 text-muted">Total:</p>
-                                    <p class="text-primary mb-0 fw-bold">{{ number_format($total * $dollar->valor, 2) }}
+                                    <p class="text-primary mb-0 fw-bold">{{ number_format($total * $dollar, 2) }}
                                         Bs</p>
                                 </div>
                                 <div class="col-md-4 text-center">
                                     <p class="fw-bold mb-0 text-muted">Impuesto:</p>
                                     <p class="text-primary mb-0 fw-bold">
-                                        {{ number_format($impuesto * $dollar->valor, 2) }} Bs</p>
+                                        {{ number_format($impuesto * $dollar, 2) }} Bs</p>
                                 </div>
                                 <div class="col-md-4 text-center">
                                     <p class="fw-bold mb-0 text-muted">Monto a Pagar:</p>
                                     <p class="text-primary mb-0 fw-bold">
-                                        {{ number_format($montoTotal * $dollar->valor, 2) }} Bs</p>
-                                    <input type="hidden" name="montoTotal" value="{{ $montoTotal * $dollar->valor }}">
+                                        {{ number_format($montoTotal * $dollar, 2) }} Bs</p>
+                                    <input type="hidden" name="montoTotal" value="{{ $montoTotal * $dollar }}">
                                 </div>
                             </div>
 

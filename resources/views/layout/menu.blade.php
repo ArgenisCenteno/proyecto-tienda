@@ -39,6 +39,7 @@
                         <p>Mis ventas</p>
                     </a>
                 </li>
+                @if(Auth::user()->hasRole('empleado'))
                 <li class="nav-item">
                     <a href="{{ url('/') }}" class="nav-link">
                         <p>Seguir comprando</p>
@@ -49,7 +50,8 @@
                         <p>Carrito</p>
                     </a>
                 </li>
-                @if(Auth::user()->hasRole('superAdmin'))
+                @endif
+                @if(Auth::user()->hasRole('superAdminn'))
                 <li class="nav-item">
                     <a href="{{route('compras.index')}}" class="nav-link">
                         <p>Compras</p>
@@ -61,11 +63,13 @@
                         <p>Proveedores</p>
                     </a>
                 </li>
+                @endif
                 <li class="nav-item">
                     <a href="{{route('tasas.index')}}" class="nav-link">
                         <p>Monedas</p>
                     </a>
                 </li>
+                @if(Auth::user()->hasRole('superAdmin'))
                 <li class="nav-item">
                     <a href="{{route('promociones.historia')}}" class="nav-link">
                         <p>Promociones</p>

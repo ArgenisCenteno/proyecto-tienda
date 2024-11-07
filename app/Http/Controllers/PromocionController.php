@@ -47,7 +47,7 @@ class PromocionController extends Controller
 
     public function index()
     {
-        $promociones = Promocion::with('productos')->paginate(10); // Paginación de 10 elementos
+        $promociones = Promocion::with('productos')->orderBy('id', 'DESC')->paginate(10); // Paginación de 10 elementos
         return view('productos.historia', compact('promociones'));
     }
 

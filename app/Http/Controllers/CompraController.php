@@ -216,6 +216,8 @@ class CompraController extends Controller
         $Compra->pago_id = $pago->id;
         $Compra->save();
 
+        dd($productos);
+
         // Registrar detalles Compras
         foreach ($productos as $producto) {
 

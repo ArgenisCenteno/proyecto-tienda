@@ -35,10 +35,7 @@
         </div>
 
         <!-- Cantidad Field -->
-        <div class="form-group col-sm-12 col-md-4">
-            {!! Form::label('cantidad', 'Cantidad:', ['class' => 'bold']) !!}
-            {!! Form::number('cantidad', null, ['class' => 'form-control round', 'step' => '1', 'required']) !!}
-        </div>
+       
     </div>
 
     <div class="row">
@@ -66,6 +63,17 @@
     <div class="row">
         <div class="form-group col-sm-12 col-md-12" id="imagenes-preview"></div>
     </div>
+
+    <div class="row">
+    <div class="form-group col-sm-12 col-md-12">
+        {!! Form::label('tallas', 'Tallas y Cantidades:', ['class' => 'bold']) !!}
+        <button type="button" id="add_talla" class="btn btn-success btn-sm">Agregar Talla</button>
+        
+        <div id="tallas_container" class="mt-3">
+            <!-- Aquí se añadirán los campos de talla y cantidad -->
+        </div>
+    </div>
+</div>
 
     <!-- Botones de acción -->
     <div class="float-end">
@@ -173,4 +181,73 @@
             event.preventDefault(); // Prevent form submission
         }
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let tallasContainer = document.getElementById('tallas_container');
+        let addTallaBtn = document.getElementById('add_talla');
+
+        // Contador para las filas de tallas
+        let tallaIndex = 0;
+
+        // Opciones de tallas predefinidas
+        const tallasDisponibles = ["S", "M", "L", "XL", "XXL"];
+        let tallasSeleccionadas = [];
+
+        // Función para agregar un nuevo campo de talla y cantidad
+        addTallaBtn.addEventListener('click', function () {
+            // Evita agregar tallas si ya están todas seleccionadas
+            if (tallasSeleccionadas.length >= tallasDisponibles.length) {
+                alert("Todas las tallas disponibles ya han sido seleccionadas.");
+                return;
+            }
+
+            let tallaRow = document.createElement('div');
+            tallaRow.classList.add('row', 'mb-2');
+            tallaRow.innerHTML = `
+                <div class="col-md-5">
+                    <select name="tallas[${tallaIndex}][talla]" class="form-control talla-select" required>
+                        <option value="">Seleccione una talla</option>
+                        ${tallasDisponibles
+                            .filter(talla => !tallasSeleccionadas.includes(talla))  // Solo muestra tallas no seleccionadas
+                            .map(talla => `<option value="${talla}">${talla}</option>`)
+                            .join('')}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <input type="number" name="tallas[${tallaIndex}][cantidad]" class="form-control" placeholder="Cantidad" min="1" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-talla">Eliminar</button>
+                </div>
+            `;
+
+            tallasContainer.appendChild(tallaRow);
+            tallaIndex++;
+
+            // Maneja la selección de talla para evitar duplicados
+            const selectTalla = tallaRow.querySelector('.talla-select');
+            selectTalla.addEventListener('change', function () {
+                const selectedTalla = selectTalla.value;
+
+                if (selectedTalla && !tallasSeleccionadas.includes(selectedTalla)) {
+                    tallasSeleccionadas.push(selectedTalla);
+                } else {
+                    selectTalla.value = "";
+                    alert("Esta talla ya ha sido seleccionada. Elija otra.");
+                }
+            });
+
+            // Manejar el evento para eliminar una fila de talla y liberar la talla seleccionada
+            tallaRow.querySelector('.remove-talla').addEventListener('click', function () {
+                const tallaValue = selectTalla.value;
+                tallaRow.remove();
+                tallaIndex--;
+
+                // Elimina la talla de la lista de seleccionadas para que pueda usarse nuevamente
+                tallasSeleccionadas = tallasSeleccionadas.filter(talla => talla !== tallaValue);
+            });
+        });
+    });
 </script>

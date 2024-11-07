@@ -3,7 +3,7 @@
     <section class="info-general">
         <h5>Información de la Venta</h5>
         <div class="info-grid">
-            <div>
+            <div class="success">
                 <label for="vendedor">Vendedor</label>
                 <p>{{ $venta->vendedor->name ?? 'S/D' }}</p>
             </div>
@@ -40,6 +40,7 @@
                     <th>Producto</th>
                     <th>Precio</th>
                     <th>Cantidad</th>
+                    <th>Talla</th>
                     <th>Subtotal</th>
                     <th>Impuesto</th>
                     <th>Total</th>
@@ -52,6 +53,7 @@
                     <td>{{ $detalle->producto->nombre }}</td>
                     <td>{{ number_format($detalle->precio_producto, 2) }}</td>
                     <td>{{ $detalle->cantidad }}</td>
+                    <td>{{ $detalle->talla }}</td>
                     <td>{{ number_format($detalle->neto, 2) }}</td>
                     <td>{{ number_format($detalle->impuesto, 2) }}</td>
                     <td>{{ number_format($detalle->impuesto + $detalle->neto, 2) }}</td>

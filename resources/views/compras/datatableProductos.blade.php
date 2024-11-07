@@ -109,7 +109,7 @@
                         const productLote = producto.lote;
                         const productoStock = producto.cantidad;
                         const productSubcategoria = producto.subCategoria ? producto.subCategoria.nombre : '';
-
+                        let productTallas =  ["S", "M", "L", "XL", "XXL"];
                         // Agregar el producto al array
                         productosEnCarrito.push({
                             id: productId,
@@ -142,6 +142,24 @@
             <p class="small text-secondary">${productDescription}</p>
         </div>
         
+        <!-- Selección de tallas y cantidades -->
+        <div class="mb-3" id="tallasContainer_${productId}">
+            <h6 class="text-muted">Seleccione Tallas:</h6>
+            <!-- Lista de tallas con sus cantidades -->
+            <div class="talla-group">
+                ${productTallas.map((talla, index) => `
+                    <div class="talla-item mb-2" id="tallaItem_${productId}_${index}">
+                        <label for="talla_${productId}_${index}">${talla}:</label>
+                        <div class="d-flex align-items-center">
+                            <input type="number" class="form-control cantidadTalla" id="talla_${productId}_${index}" min="1" value="1">
+                         
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+        </div>
+
         <div class="d-flex justify-content-between align-items-center">
             <div class="input-group">
                 <span class="input-group-text">Cantidad:</span>
@@ -154,8 +172,8 @@
         </div>
     </div>
 </div>
-
 `;
+
 
                         // Agregar el productoHTML al contenedor #productoCarrito
                         $('#productoCarrito').append(productoHTML);
