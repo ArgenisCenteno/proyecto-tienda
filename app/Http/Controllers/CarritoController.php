@@ -59,7 +59,7 @@ class CarritoController extends Controller
              $dato = json_decode($response);
              $dollar = $dato->promedio;
          }else{
-             $dollar = 42.30;
+             $dollar = 47.60;
          }
         $producto = Producto::find($id);
        // $dollar = Tasa::where('name', 'Dollar')->first();
@@ -170,7 +170,7 @@ class CarritoController extends Controller
              $dato = json_decode($response);
              $dollar = $dato->promedio;
          }else{
-             $dollar = 42.30;
+             $dollar = 47.60;
          }
         if(!$carrito){
             Alert::error('¡Error!', 'Carrito vacío')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
@@ -235,7 +235,7 @@ class CarritoController extends Controller
              $dato = json_decode($response);
              $dollar = $dato->promedio;
          }else{
-             $dollar = 42.30;
+             $dollar = 47.60;;
          }
 
         $total = 0;
