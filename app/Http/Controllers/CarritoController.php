@@ -109,6 +109,7 @@ class CarritoController extends Controller
         $cartItem = [
             'id' => $producto->id,
             'nombre' => $producto->nombre,
+
             'cantidad' => 1,
             'talla' => $tallaSeleccionada,
             'precio' => $precioConDescuento, // Usar el precio con descuento si aplica
@@ -141,24 +142,42 @@ class CarritoController extends Controller
     }
     
 
-    public function actualizarCarrito(Request $request)
-    {
-        $carrito = session()->get('cart');
+   public function actualizarCarrito(Request $request)
+{
+    $carrito = session()->get('cart');
 
-        // Check if the cart exists
-        if ($carrito) {
-            // Find the product by name
-            foreach ($carrito as $key => $item) {
-                if ($item['nombre'] === $request->product) {
-                    $carrito[$key]['cantidad'] = $request->cantidad; // Update quantity
-                    session()->put('cart', $carrito);
-                    return response()->json(['success' => true, 'message' => 'Carrito actualizado.']);
+    // Check if the cart exists
+    if ($carrito) {
+        // Find the product by name (you can use the product ID or other unique identifiers)
+        foreach ($carrito as $key => $item) {
+            if ($item['nombre'] === $request->product) {
+                // Retrieve stock information from your database (example using Product model)
+                $product = Producto::where('nombre', $request->product)->first(); // or use 'id' if you have it
+                
+                if (!$product) {
+                    return response()->json(['success' => false, 'message' => 'Producto no encontrado.']);
                 }
+
+                // Check if there is enough stock
+                if ($request->cantidad > $product->cantidad) {
+                   // dd($request->cantidad, $product->cantidad);
+                    return response()->json(['success' => false, 'message' => 'No hay suficiente stock disponible.']);
+                }
+
+                // Update the cart with the new quantity
+                $carrito[$key]['cantidad'] = $request->cantidad;
+
+                // Update the cart session
+                session()->put('cart', $carrito);
+
+                return response()->json(['success' => true, 'message' => 'Carrito actualizado.']);
             }
         }
-
-        return response()->json(['success' => false, 'message' => 'Item no encontrado en carrito']);
     }
+
+    return response()->json(['success' => false, 'message' => 'Item no encontrado en carrito']);
+}
+
 
     public function checkout(Request $request)
     {

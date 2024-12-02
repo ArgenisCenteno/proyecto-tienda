@@ -40,7 +40,9 @@
 
                                                             <input id="quantity-{{ $key }}" min="1" name="quantity"
                                                                 value="{{ $item['cantidad'] }}" type="number"
-                                                                class="form-control form-control-sm" readonly />
+                                                                class="form-control form-control-sm"
+                                                                oninput="updateQuantity({{ $key }}, this.value, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});" />
+
 
                                                             <button type="button" class="btn btn-link px-2"
                                                                 onclick="changeQuantity({{ $key }}, 1, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});">
@@ -49,7 +51,8 @@
                                                         </div>
                                                         <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                                                             <h6 class="mb-0" id="subtotal-{{ $key }}">
-                                                                {{ number_format($item['precio'], 2) }} <small>$</small></h6>
+                                                                {{ number_format($item['precio'], 2) }} <small>$</small>
+                                                            </h6>
                                                         </div>
                                                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                             <a href="#!" class="text-muted"
@@ -182,5 +185,65 @@
         console.log('Removing item at index:', index);
         // Make an AJAX call to remove item from the cart and refresh the page or update the cart view
     }
+    // Store initial quantities for each product in an object or attribute
+let initialQuantities = {};
+
+function updateQuantity(index, quantity, product, price) {
+    // Ensure quantity is at least 1
+    quantity = Math.max(1, parseInt(quantity));
+
+    // Save the initial quantity if it hasn't been saved yet
+    if (!initialQuantities[index]) {
+        initialQuantities[index] = document.getElementById('quantity-' + index).value;
+    }
+
+    var quantityInput = document.getElementById('quantity-' + index);
+    quantityInput.value = quantity; // Update the quantity in the input field
+
+    // Update the subtotal for this item
+    updateSubtotal(index, price);
+
+    // Update the total amount for all items
+    updateTotalAmount();
+
+    // Send updated quantity to the server via AJAX
+    fetch('{{ route("carrito.actualizar") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            product: product,
+            cantidad: quantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(data.message);
+        } else {
+            // Show SweetAlert if there's an error with stock
+            if (data.message === 'No hay suficiente stock disponible.') {
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: 'No hay suficiente stock disponible.',
+                });
+
+                // Revert the quantity input to its initial value
+                var quantityInput = document.getElementById('quantity-' + index);
+                quantityInput.value = initialQuantities[index];
+
+                // Update subtotal and total with the reverted quantity
+                updateSubtotal(index, price);
+                updateTotalAmount();
+            } else {
+                console.error(data.message);
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 </script>

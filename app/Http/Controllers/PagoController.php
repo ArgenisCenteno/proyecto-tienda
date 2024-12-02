@@ -170,6 +170,11 @@ class PagoController extends Controller
 
                 $consulta = Producto::find($c['id']);
                 //dd($consulta);
+                if($consulta->cantidad < $c['cantidad']){
+                    Alert::success('¡Inconveniente!', 'No hay stock suficiente del producto '. $consulta->nombre)->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+
+                    return redirect()->back();
+                }
                 if ($consulta->aplica_iva === 1) {
                     $impuesto += $c['precio'] * $c['cantidad'] * 0.16;
                 }
