@@ -6,7 +6,7 @@ use App\Models\Caja;
 use App\Models\DetalleVenta;
 use App\Models\Pago;
 use App\Models\Producto;
-use App\Models\Recibo;
+use App\Models\Recibo;  
 use App\Models\Tasa;
 use App\Models\Transaccion;
 use App\Models\User;
@@ -53,18 +53,8 @@ class VentaController extends Controller
                     $class = $status == 'Pagado' ? 'success' : 'danger'; // Clase basada en el estado
                     return '<span class="badge bg-' . $class . '">' . $status . '</span>';
                 })
-                ->addColumn('actions', function($row) {
-                    $viewUrl = route('ventas.show', $row->id);
-                    $deleteUrl = route('ventas.destroy', $row->id);
-                    $pdfUrl = route('ventas.pdf', $row->id); // Asegúrate de que la ruta esté correcta
-                    return '<a href="'.$viewUrl.'" class="btn btn-primary btn-sm">Detalles</a>
-                            
-                           <form action="'.$deleteUrl.'"  method="POST" style="display:inline; " class="btn-delete">
-                            '.csrf_field().'
-                            '.method_field('DELETE').'
-                            <button type="submit" class="btn btn-danger btn-sm " >Eliminar</button>
-                        </form>';
-                })
+                ->addColumn('actions', 'ventas.actions')
+
                 ->rawColumns(['status', 'actions'])
                 ->make(true);
         }

@@ -25,13 +25,13 @@ class PagoController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-           
 
-            if(Auth::user()->hasRole('superAdmin')){
+
+            if (Auth::user()->hasRole('superAdmin')) {
                 $data = Pago::with(['user', 'compras', 'ventas'])->get();
-            }else{
+            } else {
                 $data = Pago::with(['user', 'compras', 'ventas'])
-                ->where('creado_id', Auth::user()->id)->get();
+                    ->where('creado_id', Auth::user()->id)->get();
             }
 
             return DataTables::of($data)
@@ -56,18 +56,8 @@ class PagoController extends Controller
                     return '<span class="badge bg-' . $class . '">' . $status . '</span>';
                 })
 
-                ->addColumn('actions', function ($row) {
-                    $viewUrl = route('pagos.edit', $row->id);
-                    $deleteUrl = route('pagos.destroy', $row->id);
-                    $pdfUrl = route('pagos.pdf', $row->id); // Asegúrate de que la ruta esté correcta
-                    return '<a href="' . $viewUrl . '" class="btn btn-warning btn-sm">Ver</a>
-                           
-                           <form action="' . $deleteUrl . '"  method="POST" style="display:inline; " class="btn-delete">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-danger btn-sm " >Eliminar</button>
-                        </form>';
-                })
+                ->addColumn('actions', 'pagos.actions')
+
                 ->rawColumns(['status', 'actions'])
                 ->make(true);
         }
@@ -123,15 +113,40 @@ class PagoController extends Controller
         $pago->save(); // Save the changes
 
         $venta = Venta::where('pago_id', $id)->first();
-       // $recibo = Recibo::where('pago_id', $id)->first();
-     //   dd($recibo);
+        // $recibo = Recibo::where('pago_id', $id)->first();
+        //   dd($recibo);
 
         if (($request->status == 'Pagado' || $request->status == 'Rechazado' && $request->status != null && $venta && $recibo)) {
             $venta->status = $request->status;
             $venta->save();
 
-           // $recibo->status = $request->status;
-          //  $recibo->save();
+            if($pago->forma_pago == null && $request->input('metodo') != null){
+                $bancoOrigen = $request->input('banco_origen');
+                $bancoDestino = $request->input('banco_destino');
+                $numeroReferencia = $request->input('numero_referencia');
+                $metodo = $request->input('metodo');
+                $montoDollar = 0; // Ejemplo de monto en dólares basado en la tasa de cambio
+        
+                $dollar = Tasa::where('name', 'Dollar')->where('status', 'Activo')->first();
+        
+                // Crear el array con el método de pago
+                $metodos = [
+                    [
+                        "metodo" => strtoupper($metodo),
+                        "cantidad" => $pago->montoTotal,
+                        "banco_origen" => strtoupper($bancoOrigen), // Para asegurarte de que los bancos estén en mayúsculas
+                        "banco_destino" => strtoupper($bancoDestino),
+                        "numero_referencia" => $numeroReferencia,
+                        "monto_bs" => 0,
+                        "monto_dollar" => $montoDollar,
+                    ]
+                ];
+
+                $pago->forma_pago = json_encode($metodos);
+                $pago->save();
+            }
+
+          
         }
 
         Alert::success('¡Exito!', 'Pago actualizado exitosamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
@@ -143,10 +158,18 @@ class PagoController extends Controller
      */
     public function destroy(string $id)
     {
-        $pago = Pago::findOrFail($id); // Find the payment by ID
-        $pago->detele();
-        Alert::success('¡Exito!', 'Pago eliminado exitosamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
-        return redirect(route('pagos.index'));
+        try {
+            $pago = Pago::find($id); // Find the payment by ID
+           
+            $pago->delete();
+            Alert::success('¡Exito!', 'Pago eliminado exitosamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+            return redirect(route('pagos.index'));
+        } catch (\Throwable $th) {
+            Alert::error('¡Error!', 'Error al intentar eliminar el pago')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+            return redirect(route('pagos.index'));
+
+        }
+
     }
 
     public function pagarCuenta(Request $request)
@@ -166,12 +189,15 @@ class PagoController extends Controller
 
         if (count($carrito) > 0) {
             foreach ($carrito as $c) {
+
                 $total += $c['precio'] * $c['cantidad'];
 
                 $consulta = Producto::find($c['id']);
+                $tallaSeleccionada = $c['talla'];
+                $tallaDisponible = $consulta->tallas->where('talla', $tallaSeleccionada)->first();
                 //dd($consulta);
-                if($consulta->cantidad < $c['cantidad']){
-                    Alert::success('¡Inconveniente!', 'No hay stock suficiente del producto '. $consulta->nombre)->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+                if (!$tallaDisponible || $tallaDisponible->cantidad <= 0 || $tallaDisponible->cantidad < $c['cantidad']) {
+                    Alert::success('¡Inconveniente!', 'No hay stock suficiente del producto ' . $consulta->nombre)->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
 
                     return redirect()->back();
                 }
@@ -322,7 +348,7 @@ class PagoController extends Controller
                 \Log::error('Error al enviar notificación: ' . $e->getMessage());
             }
         }
-        
+
         Alert::success('Exito!', 'Orden Generada')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
 
         return redirect(route('ventas.index'));

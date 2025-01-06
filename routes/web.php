@@ -108,6 +108,8 @@ Route::get('/pdfUser/{id}', [PdfController::class, 'pdfEstadoCuenta'])->name('us
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/login', [LoginController::class, 'login']);
+Route::get('/carrito/eliminar/{index}', [CarritoController::class, 'eliminarCarrito'])->name('carrito.eliminar');
+
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Auth::routes();
 

@@ -6,6 +6,7 @@ use App\Models\Categoria;
 use App\Models\Compra;
 use App\Models\Pago;
 use App\Models\Producto;
+use App\Models\Promocion;
 use App\Models\Proveedor;
 use App\Models\SubCategoria;
 use App\Models\User;
@@ -38,12 +39,12 @@ class HomeController extends Controller
         $categorias = Categoria::count();
         $subcategorias = SubCategoria::count();
         $proveedores = Proveedor::count();
-        $pagos = Pago::count();
-
+        $pagos = Pago::where('status', 'pendiente')->count();
+        $promociones = Promocion::with('productos')->orderBy('id', 'DESC')->paginate(10); // Paginación de 10 elementos
         $notificaciones = auth()->user()->unreadNotifications;
-
+        $pagoPendientes = Pago::where('status', 'pendiente')->paginate(5);
         
-        return view('home', compact('ventas', 'compras', 'notificaciones' ,'proveedores' ,'usuarios', 'productos', 'categorias', 'subcategorias', 'pagos'));
+        return view('home', compact('pagoPendientes','promociones','ventas', 'compras', 'notificaciones' ,'proveedores' ,'usuarios', 'productos', 'categorias', 'subcategorias', 'pagos'));
     }
     
   

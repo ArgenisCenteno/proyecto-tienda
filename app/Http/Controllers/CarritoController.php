@@ -51,18 +51,38 @@ class CarritoController extends Controller
     }
 
     public function detalles($id)
-    {  
-        $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
-       
+    {
+        function isConnected()
+        {
+            $connected = @fsockopen("www.google.com", 80); // Intenta conectar al puerto 80 de Google
+            if ($connected) {
+                fclose($connected);
+                return true; // Hay conexión
+            }
+            return false; // No hay conexión
+        }
+
+        if (isConnected()) {
+            $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
+
+        } else {
+
+            $response = false;
+        }
+
+
+
         // dd();
-         if($response){
-             $dato = json_decode($response);
-             $dollar = $dato->promedio;
-         }else{
-             $dollar = 47.60;
-         }
+        if ($response) {
+            $dato = json_decode($response);
+            $dollar = $dato->promedio;
+        } else {
+            $consulta = Tasa::where('name', 'Dollar')->where('status', 'Activo')->first();
+            $dollar = $consulta->valor;
+
+        }
         $producto = Producto::find($id);
-       // $dollar = Tasa::where('name', 'Dollar')->first();
+        // $dollar = Tasa::where('name', 'Dollar')->first();
 
 
         return view('detalles')->with('producto', $producto)->with('dollar', $dollar);
@@ -72,18 +92,18 @@ class CarritoController extends Controller
     {
         // Retrieve the product based on ID
         $producto = Producto::find($id);
-    
+
         if (!$producto) {
             return redirect()->back()->with('error', 'Producto no encontrado');
         }
-    
+
         // Get the selected size from the request
         $tallaSeleccionada = $request->talla;
-    
+
         // Verificar si el producto tiene tallas y si la talla seleccionada está disponible
         if ($producto->tallas && $producto->tallas->count() > 0) {
             $tallaDisponible = $producto->tallas->where('talla', $tallaSeleccionada)->first();
-    
+
             if (!$tallaDisponible || $tallaDisponible->cantidad <= 0) {
                 Alert::error('¡Error!', 'La talla seleccionada no está disponible o está agotada')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
 
@@ -94,7 +114,7 @@ class CarritoController extends Controller
 
             return redirect()->back()->with('error', 'Este producto no tiene tallas disponibles');
         }
-    
+
         // Verificar si hay alguna promoción activa para el producto
         $precioConDescuento = $producto->precio_venta; // Precio base
         foreach ($producto->promocion as $promocion) {
@@ -104,7 +124,7 @@ class CarritoController extends Controller
                 break; // Usar la primera promoción activa que encuentre
             }
         }
-    
+
         // Crear el item del carrito
         $cartItem = [
             'id' => $producto->id,
@@ -115,10 +135,10 @@ class CarritoController extends Controller
             'precio' => $precioConDescuento, // Usar el precio con descuento si aplica
             'imagen' => asset($producto->imagenes[0]->url) // Usar la primera imagen
         ];
-    
+
         // Obtener el carrito existente de la sesión
         $cart = Session::get('cart', []);
-    
+
         // Verificar si el producto ya está en el carrito
         if (count($cart) > 0) {
             foreach ($cart as $key => $item) {
@@ -131,67 +151,77 @@ class CarritoController extends Controller
                 }
             }
         }
-    
+
         // Si el producto no está en el carrito, agregarlo
         $cart[] = $cartItem;
-    
+
         // Guardar el carrito de nuevo en la sesión
         Session::put('cart', $cart);
         Alert::success('¡Éxito!', 'Producto agregado al carrito')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
         return redirect()->back();
     }
-    
 
-   public function actualizarCarrito(Request $request)
-{
-    $carrito = session()->get('cart');
 
-    // Check if the cart exists
-    if ($carrito) {
-        // Find the product by name (you can use the product ID or other unique identifiers)
-        foreach ($carrito as $key => $item) {
-            if ($item['nombre'] === $request->product) {
-                // Retrieve stock information from your database (example using Product model)
-                $product = Producto::where('nombre', $request->product)->first(); // or use 'id' if you have it
-                
-                if (!$product) {
-                    return response()->json(['success' => false, 'message' => 'Producto no encontrado.']);
+    public function actualizarCarrito(Request $request)
+    {
+        $carrito = session()->get('cart');
+
+        // Check if the cart exists
+        if ($carrito) {
+            // Find the product by name (you can use the product ID or other unique identifiers)
+            foreach ($carrito as $key => $item) {
+                if ($item['nombre'] === $request->product) {
+                    // Retrieve stock information from your database (example using Product model)
+                    $product = Producto::where('nombre', $request->product)->first(); // or use 'id' if you have it
+
+                    if (!$product) {
+                        return response()->json(['message' => 'Producto no encontrado.']);
+                    }
+
+                    // Get the selected size from the request
+                    $tallaSeleccionada = $request->talla;
+
+                    // Verificar si el producto tiene tallas y si la talla seleccionada está disponible
+                    if ($product->tallas && $product->tallas->count() > 0) {
+                        $tallaDisponible = $product->tallas->where('talla', $tallaSeleccionada)->first();
+
+                        if (!$tallaDisponible || $tallaDisponible->cantidad <= 0 || $tallaDisponible->cantidad < $request->cantidad) {
+                            return response()->json(['message' => 'No hay suficiente stock disponible.']);
+
+                        }
+                    } else {
+                        return response()->json(['message' => 'Sin tallas disponibles.']);
+
+                    }
+
+                    // Update the cart with the new quantity
+                    $carrito[$key]['cantidad'] = $request->cantidad;
+
+                    // Update the cart session
+                    session()->put('cart', $carrito);
+
+                    return response()->json(['success' => true, 'message' => 'Carrito actualizado.']);
                 }
-
-                // Check if there is enough stock
-                if ($request->cantidad > $product->cantidad) {
-                   // dd($request->cantidad, $product->cantidad);
-                    return response()->json(['success' => false, 'message' => 'No hay suficiente stock disponible.']);
-                }
-
-                // Update the cart with the new quantity
-                $carrito[$key]['cantidad'] = $request->cantidad;
-
-                // Update the cart session
-                session()->put('cart', $carrito);
-
-                return response()->json(['success' => true, 'message' => 'Carrito actualizado.']);
             }
         }
-    }
 
-    return response()->json(['success' => false, 'message' => 'Item no encontrado en carrito']);
-}
+        return response()->json(['success' => false, 'message' => 'Item no encontrado en carrito']);
+    }
 
 
     public function checkout(Request $request)
     {
         $carrito = session()->get('cart');
         $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
-       
+
         // dd();
-         if($response){
-             $dato = json_decode($response);
-             $dollar = $dato->promedio;
-         }else{
-             $dollar = 47.60;
-         }
-        if(!$carrito){
+        if ($response) {
+            $dato = json_decode($response);
+            $dollar = $dato->promedio;
+        } else {
+            $dollar = 47.60;
+        }
+        if (!$carrito) {
             Alert::error('¡Error!', 'Carrito vacío')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
             return redirect()->back();
         }
@@ -206,15 +236,15 @@ class CarritoController extends Controller
 
                 $consulta = Producto::find($c['id']);
                 //dd($consulta);
-                if($consulta->aplica_iva === 1) {
+                if ($consulta->aplica_iva === 1) {
                     $impuesto += $c['precio'] * $c['cantidad'] * 0.16;
                 }
-                
+
             }
         }
 
         $montoTotal = $impuesto + $total;
-   
+
 
         return view('pagar', compact('carrito', 'dollar', 'total', 'montoTotal', 'impuesto'));
     }
@@ -248,14 +278,15 @@ class CarritoController extends Controller
     {
         $cart = Session::get('cart', []);
         $response = file_get_contents("https://ve.dolarapi.com/v1/dolares/oficial");
-       
+
         // dd();
-         if($response){
-             $dato = json_decode($response);
-             $dollar = $dato->promedio;
-         }else{
-             $dollar = 47.60;;
-         }
+        if ($response) {
+            $dato = json_decode($response);
+            $dollar = $dato->promedio;
+        } else {
+            $dollar = 47.60;
+            ;
+        }
 
         $total = 0;
 
@@ -291,4 +322,29 @@ class CarritoController extends Controller
     {
         //
     }
+
+    public function eliminarCarrito($index)
+    {
+        // Obtener el carrito de la sesión
+        $cart = Session::get('cart', []);
+
+        // Verificar si el índice existe en el carrito
+        if (isset($cart[$index])) {
+            // Eliminar el producto del carrito
+            unset($cart[$index]);
+
+            // Reindexar el carrito para mantener consistencia
+            $cart = array_values($cart);
+
+            // Guardar el carrito actualizado en la sesión
+            Session::put('cart', $cart);
+
+            return response()->json(['success' => true,'message' => 'Producto Eliminado.']);
+        } else {
+            return response()->json(['message' => 'Error inesperado.']);
+        }
+
+        return redirect()->back();
+    }
+
 }

@@ -33,21 +33,15 @@
                                                             <h6 class="mb-0">{{ $item['talla'] }}</h6>
                                                         </div>
                                                         <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                                            <button type="button" class="btn btn-link px-2"
-                                                                onclick="changeQuantity({{ $key }}, -1, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});">
-                                                                <i class="fas fa-minus">-</i>
-                                                            </button>
+
 
                                                             <input id="quantity-{{ $key }}" min="1" name="quantity"
                                                                 value="{{ $item['cantidad'] }}" type="number"
                                                                 class="form-control form-control-sm"
-                                                                oninput="updateQuantity({{ $key }}, this.value, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});" />
+                                                                oninput="updateQuantity({{ $key }}, this.value, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }}, {{ json_encode($item['talla']) }});" />
 
 
-                                                            <button type="button" class="btn btn-link px-2"
-                                                                onclick="changeQuantity({{ $key }}, 1, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }});">
-                                                                <i class="fas fa-plus">+</i>
-                                                            </button>
+
                                                         </div>
                                                         <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                                                             <h6 class="mb-0" id="subtotal-{{ $key }}">
@@ -55,9 +49,9 @@
                                                             </h6>
                                                         </div>
                                                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                                            <a href="#!" class="text-muted"
-                                                                onclick="removeFromCart({{ $key }});"><i
-                                                                    class="fas fa-times"></i></a>
+                                                            <button onclick="removeFromCart({{ $key }})" class="btn btn-danger">
+                                                                Quitar
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <hr class="my-4">
@@ -145,68 +139,34 @@
         // Update the display for total amount
         document.getElementById('total-amount').innerText = totalAmount.toFixed(2) + ' $'; // Update total display
     }
-
-    function changeQuantity(index, change, product, price) {
-        var quantityInput = document.getElementById('quantity-' + index);
-        var newQuantity = parseInt(quantityInput.value) + change;
-
-        if (newQuantity < 1) {
-            newQuantity = 1;
-        }
-
-        quantityInput.value = newQuantity;
-        updateSubtotal(index, price);
-        updateTotalAmount(); // Update total amount when quantity changes
-
-        fetch('{{ route("carrito.actualizar") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                product: product,
-                cantidad: newQuantity
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log(data.message);
-                } else {
-                    console.error(data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    function removeFromCart(index) {
-        // Implement remove functionality
-        console.log('Removing item at index:', index);
-        // Make an AJAX call to remove item from the cart and refresh the page or update the cart view
-    }
-    // Store initial quantities for each product in an object or attribute
-let initialQuantities = {};
-
-function updateQuantity(index, quantity, product, price) {
-    // Ensure quantity is at least 1
-    quantity = Math.max(1, parseInt(quantity));
-
-    // Save the initial quantity if it hasn't been saved yet
-    if (!initialQuantities[index]) {
-        initialQuantities[index] = document.getElementById('quantity-' + index).value;
-    }
-
+    function changeQuantity(index, change, product, price, talla) {
     var quantityInput = document.getElementById('quantity-' + index);
-    quantityInput.value = quantity; // Update the quantity in the input field
 
-    // Update the subtotal for this item
+    // Obtener la cantidad actual del input
+    var currentQuantity = parseInt(quantityInput.value);
+
+    // Calcular la nueva cantidad
+    var newQuantity = currentQuantity + change || 1;
+
+    // Validar y asegurar que la cantidad sea al menos 1
+    if (isNaN(newQuantity) || newQuantity < 1) {
+        newQuantity = 1;
+    }
+
+    // Actualizar el campo de entrada con la nueva cantidad inmediatamente
+    quantityInput.value = newQuantity;
+
+    // Evitar continuar si la nueva cantidad es nula o cero
+    if (!newQuantity || newQuantity <= 0) {
+        quantityInput.value = 1; // Restablecer a 1 si está vacío o inválido
+        return;
+    }
+
+    // Actualizar subtotal y total
     updateSubtotal(index, price);
-
-    // Update the total amount for all items
     updateTotalAmount();
 
-    // Send updated quantity to the server via AJAX
+    // Enviar la cantidad actualizada al servidor
     fetch('{{ route("carrito.actualizar") }}', {
         method: 'POST',
         headers: {
@@ -215,35 +175,146 @@ function updateQuantity(index, quantity, product, price) {
         },
         body: JSON.stringify({
             product: product,
-            cantidad: quantity
+            cantidad: newQuantity,
+            talla: talla
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log(data.message);
-        } else {
-            // Show SweetAlert if there's an error with stock
-            if (data.message === 'No hay suficiente stock disponible.') {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(data.message);
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: '¡Error!',
-                    text: 'No hay suficiente stock disponible.',
+                    text: data.message || 'Ocurrió un problema al actualizar la cantidad.',
                 });
 
-                // Revert the quantity input to its initial value
-                var quantityInput = document.getElementById('quantity-' + index);
-                quantityInput.value = initialQuantities[index];
-
-                // Update subtotal and total with the reverted quantity
+                // Revertir la cantidad al valor inicial
+                quantityInput.value = currentQuantity;
                 updateSubtotal(index, price);
                 updateTotalAmount();
-            } else {
-                console.error(data.message);
             }
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'No se pudo actualizar la cantidad. Inténtalo de nuevo.',
+            });
+
+            // Revertir la cantidad al valor inicial
+            quantityInput.value = currentQuantity;
+            updateSubtotal(index, price);
+            updateTotalAmount();
+        });
 }
 
+
+
+    // Store initial quantities for each product in an object or attribute
+    let initialQuantities = {};
+    function updateQuantity(index, quantity, product, price, talla) {
+    // Asegurarse de que la cantidad sea al menos 1
+    quantity = Math.max(1, parseInt(quantity) || 1);
+
+    // Guardar la cantidad inicial si no se ha guardado previamente
+    if (!initialQuantities[index]) {
+        initialQuantities[index] = document.getElementById('quantity-' + index).value;
+    }
+
+    var quantityInput = document.getElementById('quantity-' + index);
+    quantityInput.value = quantity; // Actualizar el campo de entrada con la nueva cantidad
+
+    // Actualizar el subtotal y el monto total
+    updateSubtotal(index, price);
+    updateTotalAmount();
+
+    // Enviar la cantidad actualizada al servidor mediante AJAX
+    fetch('{{ route("carrito.actualizar") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            product: product,
+            cantidad: quantity,
+            talla: talla
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(data.message);
+            } else {
+                // Mostrar mensaje de error si ocurre un problema en el servidor
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: data.message || 'Ocurrió un problema al actualizar la cantidad.',
+                });
+
+                // Revertir el campo de entrada a su valor inicial
+                quantityInput.value = initialQuantities[index];
+
+                // Actualizar subtotal y total con la cantidad revertida
+                updateSubtotal(index, price);
+                updateTotalAmount();
+            }
+        })
+        .catch(() => {
+            // Mostrar mensaje de error si ocurre un problema en la conexión
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'No hay suficiente stock disponible.',
+            });
+
+            // Revertir el campo de entrada a su valor inicial
+            quantityInput.value = initialQuantities[index];
+
+            // Actualizar subtotal y total con la cantidad revertida
+            updateSubtotal(index, price);
+            updateTotalAmount();
+        });
+}
+
+
+
+
+</script>
+<script>
+    function removeFromCart(index) {
+        fetch(`{{ url('/carrito/eliminar/') }}/${index}`, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'Producto eliminado del carrito.',
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: data.message || 'No se pudo eliminar el producto.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+            });
+    }
 </script>
