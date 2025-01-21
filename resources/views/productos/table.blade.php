@@ -7,7 +7,6 @@
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio </th>
-               
                 <th>Subcategoría</th>
                 <th>Disponible</th>
                 <th>Opciones</th>
@@ -43,7 +42,7 @@
              
                  { data: 'subCategoria', name: 'subCategoria' }, 
                 { data: 'disponibles', name: 'disponibles' },
-                { data: 'actions', name: 'actions', searchable: true, orderable: true }
+                { data: 'actions', name: 'actions', searchable: false, orderable: false }
             ],
             order: [[0, 'desc']],
             "language": {

@@ -1,15 +1,17 @@
 <td>
-    {!! Form::open(['route' => ['productos.destroy', $id], 'method' => 'delete', 'class' => 'btn-delete']) !!}
+    {!! Form::open(['route' => ['promociones.destroy', $id], 'method' => 'delete', 'class' => 'btn-delete']) !!}
     <div class='btn-group'>
-        <a href="{{ route('productos.edit', [$id]) }}" class='btn btn-success' data-bs-toggle="tooltip"
-            data-bs-placement="top" title="Editar"><span >Editar</span></a>
+        <a href="{{ route('promociones.show', [$id]) }}" class='btn btn-info' data-bs-toggle="tooltip"
+            data-bs-placement="top" title="Ver"><span >Ver</span></a>
         
         
-        {!! Form::button('<span>Eliminar</span>', ['type' => 'submit', 'class' =>
+        {!! Form::button('<span >Eliminar</span>', ['type' => 'submit', 'class' =>
         'btn btn-danger', 'data-bs-toggle' => 'tooltip', 'data-bs-placement' => 'top', 'title' => 'Eliminar']) !!}
     </div>
     {!! Form::close() !!}
 </td>
+<!-- SweetAlert CDN -->
+ 
 <script src="{{asset('js/sweetalert2.js')}}"></script>
 
 <!-- ALERT DE CONFIRMACION DE ELIMINACION -->

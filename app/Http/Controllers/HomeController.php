@@ -11,6 +11,7 @@ use App\Models\Proveedor;
 use App\Models\SubCategoria;
 use App\Models\User;
 use App\Models\Venta;
+use Auth;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -32,19 +33,29 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $ventas = Venta::count();
+      
         $compras = Compra::count();
-        $usuarios = User::count();
+       
         $productos = Producto::count();
         $categorias = Categoria::count();
         $subcategorias = SubCategoria::count();
         $proveedores = Proveedor::count();
-        $pagos = Pago::where('status', 'pendiente')->count();
+    
         $promociones = Promocion::with('productos')->orderBy('id', 'DESC')->paginate(10); // Paginación de 10 elementos
         $notificaciones = auth()->user()->unreadNotifications;
-        $pagoPendientes = Pago::where('status', 'pendiente')->paginate(5);
-        
+        if(Auth::user()->hasRole('cliente')){
+            $pagos = Pago::where('status', 'pendiente')->where('user_id', Auth::user()->id)->count();
+            $pagoPendientes = Pago::where('status', 'pendiente')->where('user_id', Auth::user()->id)->paginate(5);
+            $usuarios = 1;
+            $ventas = Venta::where('user_id', Auth::user()->id)->count();
+        }else{
+            $pagos = Pago::where('status', 'pendiente')->count();
+            $pagoPendientes = Pago::where('status', 'pendiente')->paginate(5);
+            $usuarios = User::count();
+            $ventas = Venta::count();
+        }      
         return view('home', compact('pagoPendientes','promociones','ventas', 'compras', 'notificaciones' ,'proveedores' ,'usuarios', 'productos', 'categorias', 'subcategorias', 'pagos'));
+     
     }
     
   

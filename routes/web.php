@@ -46,6 +46,11 @@ Route::get('/historia', [PromocionController::class, 'index'])->name('promocione
 Route::get('/promo/{id}', [PromocionController::class, 'show'])->name('promociones.show');
 Route::get('/promociones', [PromocionController::class, 'create'])->name('promociones.create');
 Route::post('/promociones', [PromocionController::class, 'store'])->name('promociones.store');
+Route::delete('/promociones/{id}', [PromocionController::class, 'destroy'])->name('promociones.destroy');
+Route::post('/promocioness', [PromocionController::class, 'eliminarMultiplesRegistros'])->name('eliminarMultiplesPromociones');
+Route::get('ventas/export', [VentaController::class, 'export'])->name('ventas.export');
+Route::get('pagos/export', [PagoController::class, 'export'])->name('pagos.export');
+
 //Notificaciones
 
 Route::get('notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
@@ -109,6 +114,8 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/carrito/eliminar/{index}', [CarritoController::class, 'eliminarCarrito'])->name('carrito.eliminar');
+Route::post('/eliminar-ventas', [VentaController::class, 'eliminarMultiplesRegistros'])->name('eliminarMultiplesRegistros');
+Route::post('/eliminar-pagos', [PagoController::class, 'eliminarMultiplesRegistros'])->name('eliminarMultiplesPagos');
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Auth::routes();

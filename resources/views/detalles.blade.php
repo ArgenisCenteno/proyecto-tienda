@@ -61,32 +61,33 @@
 
                 <!-- Selección de tallas -->
                 <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST" id="formAgregarCarrito">
-                    @csrf
-                    <div class="mt-4">
-                        <h5>Selecciona una talla:</h5>
-                        @foreach ($producto->tallas as $talla)
-                            <div class="form-check">
-                                <input 
-                                    class="form-check-input" 
-                                    type="radio" 
-                                    name="talla" 
-                                    id="talla{{ $talla->id }}" 
-                                    value="{{ $talla->talla }}" 
-                                    {{ $talla->cantidad == 0 ? 'disabled' : '' }}
-                                    {{ $loop->first && $talla->cantidad > 0 ? 'checked' : '' }}
-                                >
-                                <label class="form-check-label {{ $talla->cantidad == 0 ? 'text-muted' : '' }}" for="talla{{ $talla->id }}">
-                                    {{ $talla->talla }} - {{ $talla->cantidad }} disponibles
-                                </label>
-                            </div>
-                        @endforeach
-                    </div>
+    @csrf
+    <div class="mt-4">
+        <h5>Selecciona una o más tallas:</h5>
+        @foreach ($producto->tallas as $talla)
+            <div class="form-check">
+                <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    name="tallas[]" 
+                    id="talla{{ $talla->id }}" 
+                    value="{{ $talla->talla }}" 
+                    {{ $talla->cantidad == 0 ? 'disabled' : '' }}
+                    {{ $loop->first && $talla->cantidad > 0 ? 'checked' : '' }}
+                >
+                <label class="form-check-label {{ $talla->cantidad == 0 ? 'text-muted' : '' }}" for="talla{{ $talla->id }}">
+                    {{ $talla->talla }} - {{ $talla->cantidad }} disponibles
+                </label>
+            </div>
+        @endforeach
+    </div>
 
-                    <!-- Botón de compra -->
-                    <button type="submit" class="btn btn-primary mt-3 btn-lg w-100" style="background-color: #3E2F5B; border: none;">
-                        Añadir a la cesta
-                    </button>
-                </form>
+    <!-- Botón de compra -->
+    <button type="submit" class="btn btn-primary mt-3 btn-lg w-100" style="background-color: #3E2F5B; border: none;">
+        Añadir a la cesta
+    </button>
+</form>
+
 
                 <!-- Botones de compartir -->
                 <div class="mt-4">
@@ -114,17 +115,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).ready(function() {
-        $('#formAgregarCarrito').on('submit', function(e) {
-            let tallaSeleccionada = $('input[name="talla"]:checked');
-            if (!tallaSeleccionada.length) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Por favor selecciona una talla disponible.',
-                });
-            }
-        });
+   $(document).ready(function() {
+    $('#formAgregarCarrito').on('submit', function(e) {
+        let tallasSeleccionadas = $('input[name="tallas[]"]:checked');
+        
+        if (tallasSeleccionadas.length === 0) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor selecciona al menos una talla disponible.',
+            });
+        } else if (tallasSeleccionadas.length > 3) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Limite de selección',
+                text: 'Solo puedes seleccionar hasta 3 tallas.',
+            });
+        }
     });
+});
+
+
+
 </script>

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\VentasExport;
 use App\Models\Caja;
 use App\Models\DetalleVenta;
 use App\Models\Pago;
 use App\Models\Producto;
-use App\Models\Recibo;  
+use App\Models\Recibo;
 use App\Models\Tasa;
 use App\Models\Transaccion;
 use App\Models\User;
@@ -16,7 +17,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Alert;
 use Illuminate\Support\Facades\Auth;
-
+use Maatwebsite\Excel\Facades\Excel;
 class VentaController extends Controller
 {
     /**
@@ -25,30 +26,30 @@ class VentaController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            if(Auth::user()->hasRole('superAdmin')){
+            if (Auth::user()->hasRole('superAdmin')) {
                 $data = Venta::with(['user', 'vendedor', 'pago'])->get();
-            }else{
+            } else {
                 $data = Venta::with(['user', 'vendedor', 'pago'])->where('user_id', Auth::user()->id)->get();
             }
-        
+
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('user', function($row) {
+                ->addColumn('user', function ($row) {
                     return $row->user->name;
                 })
-                ->addColumn('vendedor', function($row) {
+                ->addColumn('vendedor', function ($row) {
                     return $row->vendedor->name ?? 'S/D';
                 })
-                ->addColumn('monto_neto', function($row) {
+                ->addColumn('monto_neto', function ($row) {
                     return number_format($row->pago->monto_neto, 2);
                 })
-                ->addColumn('monto_total', function($row) {
+                ->addColumn('monto_total', function ($row) {
                     return number_format($row->pago->monto_total, 2);
                 })
-                ->addColumn('fecha', function($row) {
+                ->addColumn('fecha', function ($row) {
                     return $row->created_at->format('Y-m-d'); // Ajusta el formato de fecha aquí
                 })
-                ->addColumn('status', function($row) {
+                ->addColumn('status', function ($row) {
                     $status = $row->pago->status;
                     $class = $status == 'Pagado' ? 'success' : 'danger'; // Clase basada en el estado
                     return '<span class="badge bg-' . $class . '">' . $status . '</span>';
@@ -58,10 +59,10 @@ class VentaController extends Controller
                 ->rawColumns(['status', 'actions'])
                 ->make(true);
         }
-    
+
         return view('ventas.index');
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -82,7 +83,7 @@ class VentaController extends Controller
     /**
      * Display the specified resource.
      */
-  
+
     public function edit(string $id)
     {
         //
@@ -96,7 +97,7 @@ class VentaController extends Controller
         //
     }
 
-   
+
 
     public function vender(Request $request)
     {
@@ -268,31 +269,74 @@ class VentaController extends Controller
     {
         // Encuentra la venta por su ID
         $venta = Venta::find($id);
-        
+
         if (!$venta) {
             Alert::error('¡Error!', 'Venta no encontrada')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
             return redirect()->route('ventas');
         }
-    
+
         // Elimina los detalles de la venta
         $venta->detalleVentas()->delete();
-    
+
         // Elimina el pago asociado a la venta
         if ($venta->pago) {
             $venta->pago->delete();
         }
-    
+
         // Elimina la venta
         $venta->delete();
-    
+
         Alert::success('¡Éxito!', 'Venta y pago eliminados exitosamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
         return redirect()->route('ventas.index');
     }
-    
+
 
     public function show($id)
     {
         $venta = Venta::with(['user', 'vendedor', 'pago', 'detalleVentas'])->find($id);
         return view('ventas.show', compact('venta'));
     }
+
+    public function eliminarMultiplesRegistros(Request $request)
+    {
+        // Verifica que el array "selected_taxes" esté presente en la solicitud
+        if ($request->has('selected_taxes') && is_array($request->selected_taxes)) {
+            $selectedTaxes = $request->selected_taxes;
+
+            // Elimina los registros usando Eloquent
+            Venta::whereIn('id', $selectedTaxes)->delete();
+
+            Alert::success('¡Éxito!', 'Venta y pago eliminados exitosamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+            return redirect()->route('ventas.index');
+        }
+
+        Alert::success('¡Error!', 'Datos invalidos')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+        return redirect()->route('ventas.index');
+    }
+
+    public function export(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+    
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $type = $request->type;
+    
+        if ($type == 'EXCEL') {
+            return Excel::download(new VentasExport($startDate, $endDate), 'ventas.xlsx');
+        } elseif ($type == 'PDF') {
+            $ventas = Venta::with(['user', 'vendedor'])
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
+    
+            $pdf = \PDF::loadView('exports.ventas_pdf', compact('ventas'));
+    
+            // Abre el PDF en el navegador
+            return $pdf->stream('ventas.pdf');
+        }
+    }
+
 }

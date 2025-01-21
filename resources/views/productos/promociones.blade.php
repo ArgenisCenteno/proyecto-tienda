@@ -29,45 +29,53 @@
                             <form action="{{ route('promociones.store') }}" method="POST">
                                 @csrf
 
-                                <div class="form-group">
-                                    <label for="nombre">Nombre de la Promoción</label>
-                                    <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}"
-                                        required>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="nombre">Nombre de la Promoción</label>
+                                        <input type="text" name="nombre" class="form-control"
+                                            value="{{ old('nombre') }}" required>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="descuento">Descuento (%)</label>
+                                        <input type="number" name="descuento" class="form-control" min="0" max="100"
+                                            value="{{ old('descuento') }}" required>
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="fecha_inicio">Fecha de Inicio</label>
+                                        <input type="date" name="fecha_inicio" class="form-control"
+                                            value="{{ old('fecha_inicio') }}" required>
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="descuento">Descuento (%)</label>
-                                    <input type="number" name="descuento" class="form-control" min="0" max="100"
-                                        value="{{ old('descuento') }}" required>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="fecha_fin">Fecha de Fin</label>
+                                        <input type="date" name="fecha_fin" class="form-control"
+                                            value="{{ old('fecha_fin') }}" required>
+                                    </div>
+
+                                    <div class="form-group col-md-8">
+                                        <label for="productos">Seleccionar Productos</label>
+                                        <select name="productos[]" id="productos" class="form-control" multiple size="5"
+                                            required>
+                                            @foreach ($productos as $producto)
+                                                <option value="{{ $producto->id }}" {{ in_array($producto->id, old('productos', [])) ? 'selected' : '' }}>
+                                                    {{ $producto->nombre }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="fecha_inicio">Fecha de Inicio</label>
-                                    <input type="date" name="fecha_inicio" class="form-control"
-                                        value="{{ old('fecha_inicio') }}" required>
+                                <div class="row">
+                                    <div class="col-12 text-right">
+                                        <button type="submit" class="btn btn-primary">Crear Promoción</button>
+                                    </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="fecha_fin">Fecha de Fin</label>
-                                    <input type="date" name="fecha_fin" class="form-control"
-                                        value="{{ old('fecha_fin') }}" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="productos">Seleccionar Productos</label>
-                                    <select name="productos[]" id="productos" class="form-control" multiple size="5"
-                                        required>
-                                        @foreach ($productos as $producto)
-                                            <option value="{{ $producto->id }}" {{ in_array($producto->id, old('productos', [])) ? 'selected' : '' }}>
-                                                {{ $producto->nombre }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-
-                                <button type="submit" class="btn btn-primary">Crear Promoción</button>
                             </form>
+
                         </div>
                     </div>
                 </div>
@@ -84,11 +92,11 @@
 
 <script>
     $(document).ready(function () {
-    $('#productos').select2({
-        placeholder: 'Selecciona uno o más productos',
-        allowClear: true
+        $('#productos').select2({
+            placeholder: 'Selecciona uno o más productos',
+            allowClear: true
+        });
     });
-});
 
 </script>
 

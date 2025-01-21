@@ -1,11 +1,18 @@
+<form id="taxesForm" action="{{ route('eliminarMultiplesPagos') }}" method="POST">
+@csrf 
+<div class="d-flex justify-content-end mb-3"> 
+                        <button id="submitBtn" style="display: none;" class="btn btn-danger round">Eliminar multiples registros</button>
+                        </div>
+
 <div class="table-responsive">
     <table class="table table-hover" id="ventas-table">
         <thead class="bg-light">
             <tr>
                 <th>#</th>
+                <th></th>
                 <th>Tipo</th>
                 <th>Creado por</th>
-                <th>Monto Total</th>
+                <th>Monto Total</th>  
                 <th>Fecha</th>
                 <th>Estado</th>
                 <th>Opciones</th>
@@ -16,7 +23,7 @@
 
 
 </div>
-
+</form>
 @section('js')
 @include('layout.script')
 <script src="{{ asset('js/adminlte.js') }}"></script>
@@ -32,6 +39,16 @@
             dataType: 'json',
             type: "POST",
             columns: [
+                {
+                    data: 'status', // Utilizar el campo 'status' para obtener el estado y decidir si mostrar el checkbox
+                    render: function (data, type, full, meta) {
+
+                        return `<input type="checkbox" class="taxes-checkbox" style="transform: scale(1.5); margin-right: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); border: 2px solid #d1d1d1;" name="selected_taxes[]" value="${full.id}">`;
+
+                    },
+                    orderable: false,
+                    searchable: false
+                },
                 { data: 'id', name: 'id' },
                 { data: 'tipo', name: 'tipo' },
                 { data: 'user', name: 'user' },
@@ -78,5 +95,18 @@
         });
     });
 </script>
- 
+<script type="text/javascript">
+    $(document).on('change', '.taxes-checkbox', function () {
+        toggleSubmitButton();
+    });
+
+    function toggleSubmitButton() {
+        // Verifica si al menos un checkbox está seleccionado
+        if ($('.taxes-checkbox:checked').length > 0) {
+            $('#submitBtn').show();
+        } else {
+            $('#submitBtn').hide();
+        }
+    }
+</script>
 @endsection

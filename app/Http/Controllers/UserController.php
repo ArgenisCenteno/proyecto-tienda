@@ -147,18 +147,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validar los datos del formulario
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'dni' => 'required|string|max:20',
-            'sector' => 'nullable|string|max:100',
-            'calle' => 'nullable|string|max:100',
-            'casa' => 'nullable|string|max:100',
-            'role' => 'required|string|exists:roles,name',
-            'status' => 'required|string|in:Activo,Inactivo',
-        ]);
+        
 
         // Encontrar el usuario por ID
         $user = User::findOrFail($id);

@@ -2,76 +2,66 @@
 
 @section('content')
 
-<section class="h-100 py-5">
+<section class="h-100 py-5 mb-5">
     <div class="container-fluid">
         <div class="row d-flex justify-content-between">
+            <!-- Carrito -->
             <div class="col-lg-9 mb-4">
-
                 @if (session('cart') && count(session('cart')) > 0)
-                    <section class="h-100 h-custom"
-                        style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; border-radius: 16px">
+                    <section class="h-100 h-custom" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 12px; border-radius: 15px;">
                         <div class="container py-5 h-100">
-                            <div class="row d-flex justify-content-center align-items-center h-100">
+                            <div class="row">
                                 <div class="col-12">
-                                    <div class="card card-registration card-registration-2" style="border-radius: 15px;">
-                                        <div class="card-body p-0">
-                                            <div class="p-5">
-                                                <div class="d-flex justify-content-between align-items-center mb-5">
-                                                    <h1 class="fw-bold mb-0" style="color: #3E2F5B">Mi cesta</h1>
-                                                    <h6 class="mb-0 text-muted">{{ count(session('cart')) }} items</h6>
-                                                </div>
-                                                <hr class="my-4">
-
-                                                @foreach (session('cart') as $key => $item)
-                                                    <div class="row mb-4 d-flex justify-content-between align-items-center">
-                                                        <div class="col-md-2 col-lg-2 col-xl-2">
-                                                            <img src="{{ $item['imagen'] }}" class="img-fluid rounded-3"
-                                                                alt="{{ $item['nombre'] }}">
-                                                        </div>
-                                                        <div class="col-md-3 col-lg-3 col-xl-3">
-                                                            <h6 class="text-muted">{{ $item['nombre'] }}</h6>
-                                                            <h6 class="mb-0">{{ $item['talla'] }}</h6>
-                                                        </div>
-                                                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-
-
-                                                            <input id="quantity-{{ $key }}" min="1" name="quantity"
-                                                                value="{{ $item['cantidad'] }}" type="number"
-                                                                class="form-control form-control-sm"
-                                                                oninput="updateQuantity({{ $key }}, this.value, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }}, {{ json_encode($item['talla']) }});" />
-
-
-
-                                                        </div>
-                                                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                                            <h6 class="mb-0" id="subtotal-{{ $key }}">
-                                                                {{ number_format($item['precio'], 2) }} <small>$</small>
-                                                            </h6>
-                                                        </div>
-                                                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                                            <button onclick="removeFromCart({{ $key }})" class="btn btn-danger">
-                                                                Quitar
-                                                            </button>
-                                                        </div>
+                                    <div class="card" style="border-radius: 15px;">
+                                        <div class="card-body p-5">
+                                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                                <h2 class="fw-bold" style="color: #3E2F5B">Mi Carrito</h2>
+                                                <span class="text-muted">{{ count(session('cart')) }} items</span>
+                                            </div>
+                                            <hr>
+                                            <!-- Productos en el carrito -->
+                                            @foreach (session('cart') as $key => $item)
+                                                <div class="row mb-4 align-items-center">
+                                                    <div class="col-md-2 col-lg-2">
+                                                        <img src="{{ $item['imagen'] }}" class="img-fluid rounded-3" alt="{{ $item['nombre'] }}">
                                                     </div>
-                                                    <hr class="my-4">
-                                                @endforeach
+                                                    <div class="col-md-3 col-lg-3">
+                                                        <h5 class="text-dark">{{ $item['nombre'] }}</h5>
+                                                        <p class="text-muted mb-0">Talla: {{ $item['talla'] }}</p>
+                                                    </div>
+                                                    <div class="col-md-3 col-lg-2 d-flex">
+                                                        <input id="quantity-{{ $key }}" min="1" name="quantity"
+                                                            value="{{ $item['cantidad'] }}" type="number"
+                                                            class="form-control"
+                                                            oninput="updateQuantity({{ $key }}, this.value, {{ json_encode($item['nombre']) }}, {{ $item['precio'] }}, {{ json_encode($item['talla']) }});" />
+                                                    </div>
+                                                    <div class="col-md-2 col-lg-2 text-center">
+                                                        <h6 id="subtotal-{{ $key }}" class="text-dark">
+                                                            {{ number_format($item['precio'], 2) }} <small>$</small>
+                                                        </h6>
+                                                    </div>
+                                                    <div class="col-md-2 col-lg-1 text-end">
+                                                        <button onclick="removeFromCart({{ $key }})" class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-trash"></i> Quitar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            @endforeach
 
-                                                <div class="pt-5">
-                                                    <h6 class="mb-0"><a href="#!" class="text-body"><i
-                                                                class="fas fa-long-arrow-alt-left me-2"></i>Seguir
-                                                            comprando</a>
-                                                    </h6>
-                                                </div>
-                                                <div class="d-flex justify-content-between mb-5">
-                                                    <h5 class="text-uppercase">Total a pagar</h5>
-                                                    <h5 id="total-amount">{{ number_format($total, 2) }} $</h5>
-                                                    <!-- Total with shipping -->
-                                                </div>
-                                                <a href="{{ route('pagar') }}" class="btn btn-dark btn-block btn-lg"
-                                                    style="background-color: #3E2F5B; width: 100%">
-                                                    Pagar
+                                            <!-- Resumen del pedido -->
+                                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                                <a href="#" class="btn btn-link text-decoration-none">
+                                                    <i class="fas fa-arrow-left"></i> Seguir comprando
                                                 </a>
+                                                <div>
+                                                    <h4 class="text-dark mb-0">Total: 
+                                                        <span id="total-amount" class="text-success">{{ number_format($total, 2) }} $</span>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                              
                                             </div>
                                         </div>
                                     </div>
@@ -80,39 +70,40 @@
                         </div>
                     </section>
                 @else
-                    <p>Your cart is empty.</p>
+                    <div class="text-center py-5">
+                        <h4 class="text-muted">Tu carrito está vacío</h4>
+                        <a href="#" class="btn btn-outline-primary mt-3">Ir a comprar</a>
+                    </div>
                 @endif
-
             </div>
 
-            <div class="col-lg-3 bg-body-tertiary">
-                <div class="p-5">
-                    <h3 class="fw-bold mb-5 mt-2 pt-1">Mi cuenta</h3>
-                    @if(Auth::check())
-                        <p>, {{ Auth::user()->name }}!</p>
-                    @endif
-
-                    <hr class="my-4">
-
-                    <div class="d-flex justify-content-between mb-4">
-                        <h5 class="text-uppercase">Items
-                            @if (session('cart') && count(session('cart')) > 0)
-                                {{ count(session('cart')) }}
-                            @else
-                                0
-                            @endif
-                        </h5>
-
+            <!-- Resumen y detalles del usuario -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-4">Mi cuenta</h3>
+                        @if(Auth::check())
+                            <p class="mb-4">¡Hola, <strong>{{ Auth::user()->name }}</strong>!</p>
+                        @endif
+                        <hr>
+                        <h5 class="text-muted">Detalles</h5>
+                        <p class="mb-2">Items en el carrito: 
+                            <strong>{{ session('cart') ? count(session('cart')) : 0 }}</strong>
+                        </p>
+                        <p class="mb-2">Tasa del dólar: 
+                            <strong>{{ number_format($dollar, 2) }} $</strong>
+                        </p>
+                        <hr>
+                        <a href="{{ route('pagar') }}" class="btn btn-lg btn-primary px-5" style="background-color: #3E2F5B;">
+                                                    Pagar
+                                                </a>
                     </div>
-                    <br>
-                    <h5>Tasa del Dollar {{ number_format($dollar, 2) }} $</h5>
-                    <hr class="my-4">
                 </div>
             </div>
-
         </div>
     </div>
 </section>
+
 
 @endsection
 @include('layout.script')

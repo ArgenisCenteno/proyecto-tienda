@@ -98,9 +98,12 @@ class CarritoController extends Controller
         }
 
         // Get the selected size from the request
-        $tallaSeleccionada = $request->talla;
-
-        // Verificar si el producto tiene tallas y si la talla seleccionada está disponible
+       // $tallaSeleccionada = $request->talla;
+       
+       foreach ($request->tallas as $dato ) {
+           
+            $tallaSeleccionada = $dato;
+              // Verificar si el producto tiene tallas y si la talla seleccionada está disponible
         if ($producto->tallas && $producto->tallas->count() > 0) {
             $tallaDisponible = $producto->tallas->where('talla', $tallaSeleccionada)->first();
 
@@ -146,8 +149,7 @@ class CarritoController extends Controller
                     // Si el producto ya está en el carrito, aumentar la cantidad
                     $cart[$key]['cantidad'] += 1;
                     session()->put('cart', $cart);
-                    Alert::success('¡Éxito!', 'Se aumentó la cantidad del producto ya existente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
-                    return redirect()->back();
+                    
                 }
             }
         }
@@ -157,6 +159,9 @@ class CarritoController extends Controller
 
         // Guardar el carrito de nuevo en la sesión
         Session::put('cart', $cart);
+       }
+
+      
         Alert::success('¡Éxito!', 'Producto agregado al carrito')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
         return redirect()->back();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PagosExport;
 use App\Models\DetalleVenta;
 use App\Models\Pago;
 use App\Models\Producto;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Models\Venta;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 use Alert;
 use Illuminate\Support\Facades\Auth;
@@ -352,5 +354,50 @@ class PagoController extends Controller
         Alert::success('Exito!', 'Orden Generada')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
 
         return redirect(route('ventas.index'));
+    }
+
+    public function eliminarMultiplesRegistros(Request $request)
+    {
+        // Verifica que el array "selected_taxes" esté presente en la solicitud
+        if ($request->has('selected_taxes') && is_array($request->selected_taxes)) {
+            $selectedTaxes = $request->selected_taxes;
+
+            // Elimina los registros usando Eloquent
+            Pago::whereIn('id', $selectedTaxes)->delete();
+
+            Alert::success('¡Éxito!', 'Pagos eliminados correctamente')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+            return redirect()->route('pagos.index');
+        }
+
+        Alert::success('¡Error!', 'Datos invalidos')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+        return redirect()->route('pagos.index');
+    }
+
+    public function export(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $type = $request->type;
+        if ($type == 'EXCEL') {
+            return Excel::download(new PagosExport($startDate, $endDate), 'pagos.xlsx');
+        } elseif ($type == 'PDF') {
+            $pagos = Pago::with(['ventas', 'compras', 'recibos', 'user'])
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
+                //dd($pagos);
+            if (count($pagos) == 0) {
+                Alert::warning('¡Advertencia!', 'Sin registros encontrados')->showConfirmButton('Aceptar', 'rgba(79, 59, 228, 1)');
+                return redirect()->back();
+            }
+            $pdf = \PDF::loadView('exports.pagos_pdf', compact('pagos'));
+
+            // Abre el PDF en el navegador
+            return $pdf->stream('recibos.pdf');
+        }
     }
 }

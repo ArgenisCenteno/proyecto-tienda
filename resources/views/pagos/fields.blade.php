@@ -54,7 +54,7 @@
                 <option value="" disabled selected>Seleccione un método de pago</option>
                 <option value="Pago movil">Pago móvil</option>
                 <option value="Transferencia">Transferencia</option>
-                <option value="Pagar en tienda">Pagar en tienda</option>
+                <option value="Efectivo">Efectivo</option>
             </select>
         </div>
 
