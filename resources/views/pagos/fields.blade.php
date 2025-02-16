@@ -50,7 +50,7 @@
         
         <div class="col-md-6">
             <label for="metodo" class="form-label text-muted">Método de Pago</label>
-            <select class="form-select border-0 shadow-sm p-3" id="metodo" name="metodo" required
+            <select class="form-select border-0 shadow-sm p-3" id="metodo" name="metodo" 
                 style="background-color: #ECF0F1;">
                 <option value="" disabled selected>Seleccione un método de pago</option>
                 <option value="Pago movil">Pago móvil</option>
