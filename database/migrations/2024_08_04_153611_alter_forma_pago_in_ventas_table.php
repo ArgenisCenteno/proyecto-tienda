@@ -25,7 +25,7 @@ class AlterFormaPagoInVentasTable extends Migration
      */
     public function down()
     {
-        Schema::table('ventas', function (Blueprint $table) {
+        Schema::table('pagos', function (Blueprint $table) {
             $table->string('forma_pago', 255)->change();
         });
     }
