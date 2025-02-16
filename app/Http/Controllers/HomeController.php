@@ -44,8 +44,8 @@ class HomeController extends Controller
         $promociones = Promocion::with('productos')->orderBy('id', 'DESC')->paginate(10); // Paginación de 10 elementos
         $notificaciones = auth()->user()->unreadNotifications;
         if(Auth::user()->hasRole('cliente')){
-            $pagos = Pago::where('status', 'pendiente')->where('user_id', Auth::user()->id)->count();
-            $pagoPendientes = Pago::where('status', 'pendiente')->where('user_id', Auth::user()->id)->paginate(5);
+            $pagos = Pago::where('status', 'pendiente')->where('creado_id', Auth::user()->id)->count();
+            $pagoPendientes = Pago::where('status', 'pendiente')->where('creado_id', Auth::user()->id)->paginate(5);
             $usuarios = 1;
             $ventas = Venta::where('user_id', Auth::user()->id)->count();
         }else{
