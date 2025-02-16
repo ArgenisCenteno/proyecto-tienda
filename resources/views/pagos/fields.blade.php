@@ -37,6 +37,7 @@
 
     </div>
 
+    @if(Auth::user()->hasRole('superAdmin'))
     <div class="mb-4">
         <label for="status" class="form-label text-muted">Estado</label>
         <select class="form-select border-0 shadow-sm p-3" id="status" name="status" required
@@ -46,6 +47,7 @@
             <option value="Rechazado" {{ $pago->status == 'Rechazado' ? 'selected' : '' }}>Rechazado</option>
         </select>
     </div>
+    @endif
     <div class="row g-4" id="campos-pagos" style="display: none">
         
         <div class="col-md-6">
