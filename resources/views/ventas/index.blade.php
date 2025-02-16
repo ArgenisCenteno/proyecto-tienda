@@ -13,6 +13,8 @@
                         <div class="col-md-6 col-6">
                             <h3 class="p-2 bold">Ventas Generadas</h3>
                         </div>
+
+                        
                         @if(Auth::user()->hasRole('superAdmin|empleado'))
                         <form action="{{ route('ventas.export') }}" method="GET">
                                 @csrf
