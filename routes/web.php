@@ -64,7 +64,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/almacen', [ProductoController::class, 'almacen'])->name('almacen');
 Route::post('/registrar-producto', [ProductoController::class, 'store'])->name('registrar-producto');
 Route::resource('productos', App\Http\Controllers\ProductoController::class);
-Route::get('/imagenes/{id}', [ProductoController::class, 'imagenesProducto'])->name('imagenes-producto');
+//Route::get('/imagenes/{id}', [ProductoController::class, 'imagenesProducto'])->name('imagenes-producto');
 Route::delete('/removerImagen/{id}', [ProductoController::class, 'removerImagen'])->name('removerImagen');
 Route::post('/agregarImagen/{id}', [ProductoController::class, 'agregarImagen'])->name('agregarImagen');
 
