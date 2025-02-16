@@ -77,7 +77,7 @@
                 </li>
               
                 @endif
-                @if(Auth::user()->hasRole('superAdmin'))
+                @if(Auth::user()->hasRole('superAdminn'))
                 <li class="nav-item">
                     <a href="{{route('tasas.index')}}" class="nav-link">
                         <p>Monedas</p>
