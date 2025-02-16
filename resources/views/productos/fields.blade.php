@@ -21,6 +21,11 @@
     </div>
 
     <div class="row">
+    <div class="form-group col-sm-12 col-md-4">
+        {!! Form::label('cantidad', 'Minimo Stock:', ['class' => 'bold']) !!}
+        {!! Form::number('cantidad', null, ['class' => 'form-control round', 'step' => 'any', 'id' => 'cantidad', 'required']) !!}
+        <p id="cantidad" style="color: red; display: none;">El precio de venta no puede ser negativo.</p>
+    </div>
         <!-- Precio Venta Field -->
         <div class="form-group col-sm-12 col-md-4">
             {!! Form::label('precio_venta', 'Precio Venta:', ['class' => 'bold']) !!}

@@ -15,7 +15,7 @@
                                     <div class="card" style="border-radius: 15px;">
                                         <div class="card-body p-5">
                                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                                <h2 class="fw-bold" style="color: #3E2F5B">Mi Carrito</h2>
+                                                <h2 class="fw-bold" style="color: #3E2F5B">Tu Carrito</h2>
                                                 <span class="text-muted">{{ count(session('cart')) }} items</span>
                                             </div>
                                             <hr>
@@ -81,7 +81,7 @@
             <div class="col-lg-3">
                 <div class="card">
                     <div class="card-body p-4">
-                        <h3 class="fw-bold mb-4">Mi cuenta</h3>
+                        <h3 class="fw-bold mb-4">Tu carrito</h3>
                         @if(Auth::check())
                             <p class="mb-4">¡Hola, <strong>{{ Auth::user()->name }}</strong>!</p>
                         @endif

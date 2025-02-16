@@ -15,7 +15,7 @@
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
         rel="stylesheet">
     <title>{{ config('app.name', 'Sharli') }}</title>
-
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Fonts -->
     <style>
         .divider:after,
@@ -81,7 +81,7 @@
                             <i class="fas fa-shopping-cart"></i>
                         </a>
                         <a href="{{ route('carrito.show') }}" class="text-white me-3 no-underline">
-                            Mi Cesta
+                            Mi Carrito
                         </a>
                         @auth
                             <a href="{{ route('home') }}" class="text-white me-3 no-underline">
@@ -110,72 +110,14 @@
             @yield('content')
         </main>
     </div>
-    <footer class="text-center bg-body-tertiary">
-        <!-- Grid container -->
-        <div class="container pt-4">
-            <!-- Section: Social media -->
-            <section class="mb-4">
-                <!-- Facebook -->
-                <a data-mdb-ripple-init class="btn btn-link btn-floating btn-lg text-body m-1" href="#!" role="button"
-                    data-mdb-ripple-color="dark"><i class="fab fa-facebook-f"></i></a>
-
-                <!-- Twitter -->
-                <a data-mdb-ripple-init class="btn btn-link btn-floating btn-lg text-body m-1" href="#!" role="button"
-                    data-mdb-ripple-color="dark"><i class="fab fa-twitter"></i></a>
-
-                <!-- Google -->
-                <a data-mdb-ripple-init class="btn btn-link btn-floating btn-lg text-body m-1" href="#!" role="button"
-                    data-mdb-ripple-color="dark"><i class="fab fa-google"></i></a>
-
-                <!-- Instagram -->
-                <a data-mdb-ripple-init class="btn btn-link btn-floating btn-lg text-body m-1" href="#!" role="button"
-                    data-mdb-ripple-color="dark"><i class="fab fa-instagram"></i></a>
-
-                <!-- Linkedin -->
-                <a data-mdb-ripple-init class="btn btn-link btn-floating btn-lg text-body m-1" href="#!" role="button"
-                    data-mdb-ripple-color="dark"><i class="fab fa-linkedin"></i></a>
-                <!-- Github -->
-                <a data-mdb-ripple-init class="btn btn-link btn-floating btn-lg text-body m-1" href="#!" role="button"
-                    data-mdb-ripple-color="dark"><i class="fab fa-github"></i></a>
-            </section>
-            <!-- Section: Social media -->
-        </div>
-       
-        <!-- Grid container -->
-        <div class="container-fluid mt-5" style="width: 100%; padding: 0;">
-            <div class="card " style="width: 100%; background-color: #136F63; color: white">
-                <div class="card-body">
-                    <h5 class="card-title text-center">¡Simplifica tu experiencia de compra!</h5>
-                    <div class="row text-center">
-                        <div class="col-md-4">
-                            <i class="material-icons" style="font-size: 48px; color: white;">person_add</i>
-                            <h6 class="mt-3">Regístrate</h6>
-                            <p>Únete a nuestra comunidad y crea tu cuenta en minutos. Disfruta de promociones exclusivas
-                                y acceso a ofertas especiales.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <i class="material-icons" style="font-size: 48px; color: white;">shopping_cart</i>
-                            <h6 class="mt-3">Ordena</h6>
-                            <p>Explora nuestra amplia gama de productos. Agrega tus artículos al carrito y realiza tu
-                                pedido con facilidad.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <i class="material-icons" style="font-size: 48px; color: white;">local_shipping</i>
-                            <h6 class="mt-3">Recibe tu pedido</h6>
-                            <p>Disfruta de entregas rápidas y seguras directamente en tu puerta. ¡Es así de simple!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Copyright -->
-        <div class="text-center p-3" style="background-color: #000F08; color: white;">
-            © 2024 Copyright:
-            <a class="text-body" href="#"> <span class="">Sharli Cuchi Moda C.A</span> </a>
-        </div>
-        <!-- Copyright -->
-    </footer>
+    <footer class="bg-black text-center py-5">
+    <div class="container px-5">
+      <div class="text-white-50 small">
+        <div class="mb-2">&copy; Todos los derechos reservados</div>
+        
+      </div>
+    </div>
+  </footer>
 </body>
 @yield('js')
 @include('layout.script')

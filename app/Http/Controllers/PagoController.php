@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\PagosExport;
 use App\Models\DetalleVenta;
 use App\Models\Pago;
-use App\Models\Producto;
+use App\Models\Producto; 
 use App\Models\Recibo;
 use App\Models\Tasa;
 use App\Models\Transaccion;
@@ -98,6 +98,7 @@ class PagoController extends Controller
     {
         //dd("test");
         $pago = Pago::findOrFail($id); // Get the payment record by ID
+    
         return view('pagos.edit', compact('pago')); // Return the edit view with the payment record
     }
 
@@ -299,11 +300,14 @@ class PagoController extends Controller
             $detalleVenta->id_venta = $venta->id;
             $detalleVenta->save();
 
-            // Actualizar stock
+            // Actualizar stock  
             $productoModel = Producto::find($producto['id']);
             if ($productoModel) {
-                $productoModel->cantidad -= $producto['cantidad'];
-                $productoModel->save();
+               
+                $tallaDisponible = $productoModel->tallas->where('talla', $producto['talla'])->first();
+                $tallaDisponible->cantidad -= $c['cantidad'];
+
+                $tallaDisponible->save();
             }
         }
 

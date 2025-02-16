@@ -31,6 +31,9 @@ class ProductoController extends Controller
                 ->addColumn('subCategoria', function ($producto) {
                     return $producto->subCategoria ? $producto->subCategoria->nombre : '';
                 })
+                ->addColumn('cantidad', function ($producto) {
+                    return $producto->cantidad <= 0 ?  '<span class="badge bg-danger">No disponible</span>':$producto->cantidad ;
+                })
                 ->addColumn('imagen', function ($producto) {
                     // Si hay imágenes, mostrar la primera imagen
                     if ($producto->imagenes && $producto->imagenes->count() > 0) {
@@ -49,7 +52,7 @@ class ProductoController extends Controller
                     }
                 })
                 ->addColumn('actions', 'productos.actions', 'disponibles')
-                ->rawColumns(['imagen', 'status', 'actions', 'fecha_vencimiento', 'disponibles']) // Especificar que 'imagen' contiene HTML
+                ->rawColumns(['imagen', 'status', 'actions', 'fecha_vencimiento', 'cantidad', 'disponibles']) // Especificar que 'imagen' contiene HTML
                 ->make(true);
         } else {
             return view('productos.index');
@@ -86,12 +89,13 @@ class ProductoController extends Controller
         // Crear el producto
         $producto = Producto::create([
             'nombre' => $request->nombre,
+            'cantidad' => $request->cantidad,
             'descripcion' => $request->descripcion,
             'precio_compra' => $request->precio_compra,
             'precio_venta' => $request->precio_venta,
             'aplica_iva' => $request->aplica_iva,
-            'cantidad' => 0,
             'sub_categoria_id' => $request->sub_categoria_id,
+            'cantidad' => $request->cantidad,
             'disponible' => $request->disponible,
         ]);
     
@@ -158,6 +162,7 @@ class ProductoController extends Controller
         'nombre' => 'required|string|max:255',
         'descripcion' => 'required|string',
         'precio_compra' => 'required|numeric|min:0',
+        'cantidad' => 'required|numeric|min:1',
         'precio_venta' => 'required|numeric|min:0',
         'aplica_iva' => 'required|boolean',
         'sub_categoria_id' => 'required|exists:sub_categorias,id',
@@ -169,20 +174,19 @@ class ProductoController extends Controller
 
     // Buscar el producto por su ID
     $producto = Producto::findOrFail($id);
-
     // Actualizar los campos del producto
     $producto->nombre = $request->nombre;
+    
     $producto->descripcion = $request->descripcion;
     $producto->precio_compra = $request->precio_compra;
+    $producto->cantidad = $request->cantidad;
     $producto->precio_venta = $request->precio_venta;
-    $producto->aplica_iva = $request->aplica_iva;
-    $producto->cantidad = 0;
+    $producto->aplica_iva = $request->aplica_iva; 
     $producto->sub_categoria_id = $request->sub_categoria_id;
     $producto->disponible = $request->disponible;
 
     // Guardar el producto actualizado
-    $producto->save();
-
+    $producto->save(); 
     // Obtener un array de los IDs de tallas enviados en el request
     $tallasIdsEnviadas = collect($request->tallas)->pluck('talla')->toArray();
 

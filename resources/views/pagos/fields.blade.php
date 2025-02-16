@@ -1,6 +1,6 @@
 <form action="{{ route('pagos.update', $pago->id) }}" method="POST">
     @csrf
-    @method('PUT')
+    @method('PUT')  
 
     <div class="row mb-4">
         <div class="col-md-6">
@@ -47,6 +47,7 @@
         </select>
     </div>
     <div class="row g-4" id="campos-pagos" style="display: none">
+        
         <div class="col-md-6">
             <label for="metodo" class="form-label text-muted">Método de Pago</label>
             <select class="form-select border-0 shadow-sm p-3" id="metodo" name="metodo" required
@@ -112,6 +113,7 @@
      $(document).ready(function () {
         $('#status').change(function () {
             var selectedRole = $(this).val();
+            
 
             // Show document upload fields if the selected role is "Conductor"
             if (selectedRole === 'Pagado') { // Make sure the value matches the role name

@@ -30,13 +30,13 @@
                 @endif
                 <li class="nav-item">
                     <a href="{{route('pagos.index')}}" class="nav-link">
-                        <p>Mis pagos</p>
+                        <p>Pagos</p>
                     </a>
                 </li>
                 
                 <li class="nav-item">
                     <a href="{{route('ventas.index')}}" class="nav-link">
-                        <p>Mis ventas</p>
+                        <p>Ventas</p>
                     </a>
                 </li>
                 @if(Auth::user()->hasRole('empleado'))

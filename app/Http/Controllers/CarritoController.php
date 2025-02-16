@@ -235,6 +235,7 @@ class CarritoController extends Controller
         $impuesto = 0;
         $montoTotal = 0;
 
+      
         if (count($carrito) > 0) {
             foreach ($carrito as $c) {
                 $total += $c['precio'] * $c['cantidad'];
@@ -250,7 +251,7 @@ class CarritoController extends Controller
 
         $montoTotal = $impuesto + $total;
 
-
+        //dd($montoTotal * $dollar);
         return view('pagar', compact('carrito', 'dollar', 'total', 'montoTotal', 'impuesto'));
     }
 

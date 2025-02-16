@@ -91,7 +91,7 @@
 
                 <!-- Botones de compartir -->
                 <div class="mt-4">
-                    <h6>Compartir:</h6>
+                    <h6> </h6>
                     <a href="#" class="text-gray mr-3"><i class="fab fa-facebook fa-lg"></i></a>
                     <a href="#" class="text-gray mr-3"><i class="fab fa-twitter fa-lg"></i></a>
                     <a href="#" class="text-gray"><i class="fas fa-envelope fa-lg"></i></a>

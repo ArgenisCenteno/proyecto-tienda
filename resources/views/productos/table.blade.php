@@ -9,6 +9,7 @@
                 <th>Precio </th>
                 <th>Subcategoría</th>
                 <th>Disponible</th>
+                <th>Minimo Stock</th>
                 <th>Opciones</th>
             </tr>
         </thead>
@@ -42,6 +43,7 @@
              
                  { data: 'subCategoria', name: 'subCategoria' }, 
                 { data: 'disponibles', name: 'disponibles' },
+                { data: 'cantidad', name: 'cantidad' },
                 { data: 'actions', name: 'actions', searchable: false, orderable: false }
             ],
             order: [[0, 'desc']],
