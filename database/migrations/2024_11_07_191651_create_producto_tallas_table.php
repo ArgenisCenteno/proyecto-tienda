@@ -11,14 +11,14 @@ return new class extends Migration
         Schema::table('detalle_ventas', function (Blueprint $table) {
             $table->unsignedBigInteger('talla_id')->nullable();
             // You may want to create a foreign key if talla relates to another table like 'tallas'
-            $table->foreign('talla_id')->references('id')->on('tallas')->onDelete('set null');
+          //  $table->foreign('talla_id')->references('id')->on('tallas')->onDelete('set null');
         });
     }
 
     public function down()
     {
         Schema::table('detalle_ventas', function (Blueprint $table) {
-            $table->dropForeign(['talla_id']);
+           // $table->dropForeign(['talla_id']);
             $table->dropColumn('talla_id');
         });
     }
