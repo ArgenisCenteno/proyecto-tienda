@@ -1,81 +1,85 @@
 @extends('layouts.app')
 
 @section('content')
-  <section class="text-center" style="margin-top: 100px">
-    <div class="mx-4 mx-md-5 shadow-5-strong bg-body-tertiary" style="margin-top: -100px; backdrop-filter: blur(30px);">
+<section class="text-center" style="margin-top: 100px">
+  <div class="mx-4 mx-md-5 shadow-5-strong bg-body-tertiary" style="margin-top: -100px; backdrop-filter: blur(30px);">
     <div class="py-5 px-md-5">
       <div class="row d-flex justify-content-center">
-      <div class="col-lg-8">
-        <h2 class="fw-bold mb-5">Formulario de Registro</h2>
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-5">Formulario de Registro</h2>
 
-        <form method="POST" action="{{ route('register') }}" id="registerForm">
-        @csrf
+          <form method="POST" action="{{ route('register') }}" id="registerForm">
+            @csrf
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-          <label class="form-label"><strong>Nombre Completo</strong></label>
-          <input type="text" id="name" name="name" class="form-control w-100" required />
-          @error('name')                <p class="text-danger">{{ $message }}</p> @enderror
-          </div>
-          <div class="col-md-6 mb-3">
-          <label class="form-label"><strong>Correo Electrónico</strong></label>
-          <input type="email" id="email" name="email" class="form-control w-100" required />
-          @error('email')                <p class="text-danger">{{ $message }}</p> @enderror
-          </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><strong>Nombre Completo</strong></label>
+                <input type="text" id="name" name="name" class="form-control w-100" required />
+                @error('name') <p class="text-danger">{{ $message }}</p> @enderror
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><strong>Correo Electrónico</strong></label>
+                <input type="email" id="email" name="email" class="form-control w-100" required />
+                @error('email') <p class="text-danger">{{ $message }}</p> @enderror
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><strong>Cédula de Identidad</strong></label>
+                <input type="text" id="cedula" name="cedula" class="form-control w-100" maxlength="8" required />
+                <p class="text-danger" id="cedulaError" style="display: none;">Cédula inválida.</p>
+                @error('dni') <p class="text-danger">{{ $message }}</p> @enderror
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><strong>Número de Teléfono</strong></label>
+                <div class="d-flex">
+                  <select id="area_code" name="area_code" class="form-control w-25 me-2" required>
+                    <option value="">Seleccione</option>
+                    <option value="0412">0412</option>
+                    <option value="0414">0414</option>
+                    <option value="0424">0424</option>
+                    <option value="0426">0426</option>
+                  </select>
+                  <input type="text" id="phone" name="phone" class="form-control w-75" maxlength="7" required />
+                </div>
+                <p class="text-danger" id="phoneError" style="display: none;">Teléfono inválido. Debe tener 7 dígitos.</p>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><strong>Contraseña</strong></label>
+                <div class="d-flex">
+                  <input type="password" id="password" name="password" class="form-control w-85" required />
+                  <button type="button" class="btn btn-outline-secondary w-15" onclick="togglePassword('password', 'togglePasswordIcon1')">
+                    <i id="togglePasswordIcon1" class="bi bi-eye"></i>
+                  </button>
+                </div>
+                <p class="text-danger" id="passwordError" style="display: none;">Debe incluir al menos 1 número y 1 carácter especial.</p>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label"><strong>Confirmar Contraseña</strong></label>
+                <div class="d-flex">
+                  <input type="password" id="confirm_password" name="confirm_password" class="form-control w-85" required />
+                  <button type="button" class="btn btn-outline-secondary w-15" onclick="togglePassword('confirm_password', 'togglePasswordIcon2')">
+                    <i id="togglePasswordIcon2" class="bi bi-eye"></i>
+                  </button>
+                </div>
+                <p class="text-danger" id="confirmPasswordError" style="display: none;">Las contraseñas no coinciden.</p>
+              </div>
+            </div>
+
+            <button type="submit" id="submitButton" class="btn btn-primary btn-block mb-4" disabled>Registrarse</button>
+          </form>
         </div>
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
-          <label class="form-label"><strong>Cédula de Identidad</strong></label>
-          <input type="text" id="cedula" name="cedula" class="form-control w-100" maxlength="8" required />
-          <p class="text-danger" id="cedulaError" style="display: none;">Cédula inválida.</p>
-          @error('dni')             <p class="text-danger">{{ $message }}</p> @enderror
-          </div>
-          <div class="col-md-6 mb-3">
-  <label class="form-label"><strong>Número de Teléfono</strong></label>
-  <div class="d-flex">
-    <select id="area_code" name="area_code" class="form-control w-25 me-2" required>
-      <option value="">Seleccione</option>
-      <option value="0412">0412</option>
-      <option value="0414">0414</option>
-      <option value="0424">0424</option>
-      <option value="0426">0426</option>
-    </select>
-    <input type="text" id="phone" name="phone" class="form-control w-75" maxlength="7" required />
+      </div>
+    </div>
   </div>
-  <p class="text-danger" id="phoneError" style="display: none;">Teléfono inválido. Debe tener 7 dígitos.</p>
-</div>
+</section>
 
-        </div>
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
-          <label class="form-label"><strong>Contraseña</strong></label>
-          <input type="password" id="password" name="password" class="form-control w-100" required />
-          <p class="text-danger" id="passwordError" style="display: none;">Debe incluir al menos 1 número y 1
-            carácter especial.</p>
-          </div>
-          <div class="col-md-6 mb-3">
-          <label class="form-label"><strong>Confirmar Contraseña</strong></label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control w-100"
-            required />
-          <p class="text-danger" id="confirmPasswordError" style="display: none;">Las contraseñas no coinciden.
-          </p>
-          </div>
-        </div>
-
-        <button type="submit" id="submitButton" class="btn btn-primary btn-block mb-4" disabled>
-          Registrarse
-        </button>
-        </form>
-      </div>
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <script>
-   document.addEventListener("DOMContentLoaded", function () {
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById('registerForm');
     const cedula = document.getElementById('cedula');
     const phone = document.getElementById('phone');
@@ -153,9 +157,18 @@
     password.addEventListener('input', validatePassword);
     confirmPassword.addEventListener('input', validateConfirmPassword);
     form.addEventListener('input', validateForm);
-});
+  });
 
-
-
-  </script>
+  function togglePassword(fieldId, iconId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(iconId);
+    if (field.type === "password") {
+        field.type = "text";
+        icon.classList.replace("bi-eye", "bi-eye-slash");
+    } else {
+        field.type = "password";
+        icon.classList.replace("bi-eye-slash", "bi-eye");
+    }
+  }
+</script>
 @endsection
