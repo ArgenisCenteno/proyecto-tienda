@@ -119,17 +119,18 @@
     }
 
     function validatePassword() {
-        const passwordPattern = /^(?=.*[0-9])(?=.*[\W_]).{6,}$/;
-        if (!passwordPattern.test(password.value)) {
-            password.classList.add('is-invalid');
-            passwordError.style.display = 'block';
-            return false;
-        } else {
-            password.classList.remove('is-invalid');
-            passwordError.style.display = 'none';
-            return true;
-        }
+    const passwordPattern = /^(?=.*[0-9])(?=.*[\W_]).{7,12}$/;
+    if (!passwordPattern.test(password.value)) {
+        password.classList.add('is-invalid');
+        passwordError.style.display = 'block';
+        passwordError.textContent = 'Debe incluir al menos 1 número, 1 carácter especial y tener entre 7 y 12 caracteres.';
+        return false;
+    } else {
+        password.classList.remove('is-invalid');
+        passwordError.style.display = 'none';
+        return true;
     }
+}
 
     function validateConfirmPassword() {
         if (password.value !== confirmPassword.value) {
