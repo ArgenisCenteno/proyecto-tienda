@@ -47,53 +47,47 @@
       </div>
     </div>
   </aside>
-  <!-- App features section-->
   @foreach ($promociones as $promocion)
-  <h4 class="mt-4 text-center">{{ $promocion->nombre }}</h4>
-  <div class="row p-5">
-    @foreach ($promocion->productos as $producto)
-    @php
-    // Calculating the discounted price
-    $precioConDescuento = $producto->precio_venta - ($producto->precio_venta * $promocion->descuento / 100);
-  @endphp
-    <a href="{{ route('detalles', $producto->id) }}" class="text-decoration-none">
+    <h4 class="mt-4 text-center text-primary fw-bold">{{ $promocion->nombre }}</h4>
+    
+    <div class="row p-5 justify-content-center">
+        @foreach ($promocion->productos as $producto)
+            @php
+                // Calculando el precio con descuento
+                $precioConDescuento = $producto->precio_venta - ($producto->precio_venta * $promocion->descuento / 100);
+            @endphp
 
-    <div class="col-md-4 col-sm-6 mb-4">
-      <div class="card h-100 shadow-sm p-3">
-      <img src="{{ asset($producto->imagenes->first()->url ?? 'default-image.jpg') }}" class="card-img-top"
-      alt="Product Image" style="height: 400px;">
-      <div class="card-body">
-
-      <h5 class="card-title">{{ $producto->nombre }}</h5>
-      <br>
-      <div class="text-left">
-      <br>
-      <p><strong>Descuento:</strong> {{ $promocion->descuento }}%</p>
-      <p><strong>Precio original:</strong>
-
-        ${{ number_format($producto->precio_venta, 2, '.', ',') }}</p>
-      <p><strong>Precio con descuento:</strong>
-        ${{ number_format($precioConDescuento, 2, '.', ',') }}</p>
-
-      @if($producto->tallas && $producto->tallas->count() > 0)
-      <div class="mb-3 text-left">
-      <h6 class="text-muted">Tallas Disponibles:</h6>
-      <ul class="list-unstyled">
-      @foreach($producto->tallas as $talla)
-      <li>{{ $talla->talla }} ({{ $talla->cantidad }} disponibles)</li>
-    @endforeach
-      </ul>
-      </div>
-    @else
-      <p class="text-muted">No hay tallas disponibles</p>
-    @endif
-      </div>
-      </div>
-      </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <a href="{{ route('detalles', $producto->id) }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden product-card">
+                        <div class="image-container">
+                            <img src="{{ asset($producto->imagenes->first()->url ?? 'default-image.jpg') }}" 
+                                class="card-img-top" alt="{{ $producto->nombre }}">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold text-dark">{{ $producto->nombre }}</h5>
+                            <p class="text-muted mb-2">Descuento: <strong class="text-success">{{ $promocion->descuento }}%</strong></p>
+                            <p class="text-muted"><del>${{ number_format($producto->precio_venta, 2, '.', ',') }}</del></p>
+                            <p class="text-danger fw-bold h5">${{ number_format($precioConDescuento, 2, '.', ',') }}</p>
+                            
+                            @if($producto->tallas && $producto->tallas->count() > 0)
+                                <div class="text-muted small">
+                                    <h6 class="fw-bold">Tallas Disponibles:</h6>
+                                    <ul class="list-inline mb-0">
+                                        @foreach($producto->tallas as $talla)
+                                            <li class="list-inline-item badge bg-secondary">{{ $talla->talla }} ({{ $talla->cantidad }})</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @else
+                                <p class="text-muted small">No hay tallas disponibles</p>
+                            @endif
+                        </div>
+                    </div>
+                </a>
+            </div>
+        @endforeach
     </div>
-    </a>
-  @endforeach
-  </div>
 @endforeach
   <!-- Call to action section-->
   <section class="cta">
@@ -243,3 +237,33 @@ responsiveNavItems.map(function (responsiveNavItem) {
 
 </script>
 @endsection
+<!-- Estilos personalizados -->
+<style>
+    /* Estilos para la tarjeta */
+    .product-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .product-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Estilos para la imagen */
+    .image-container {
+        overflow: hidden;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .image-container:hover img {
+        transform: scale(1.1);
+    }
+</style>
