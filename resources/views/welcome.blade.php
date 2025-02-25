@@ -40,7 +40,7 @@
     <div class="container px-5">
       <div class="row gx-5 justify-content-center">
         <div class="col-xl-8">
-          <div class="h2 fs-1 text-white mb-4">"¡EXPLOTA NUESTRAS OFERTAS!
+          <div class="h2 fs-1 text-white mb-4">"¡EXPLORA NUESTRAS OFERTAS!
              </div>
        
         </div>

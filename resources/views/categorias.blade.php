@@ -32,8 +32,22 @@
                             @endif
                             
                             <div class="text-center my-4">
-                                <a href="{{ route('detalles', $similar->id) }}" class="btn btn-warning">Ver detalles</a>
-                            </div>
+    <a href="{{ route('detalles', $similar->id) }}" class="btn btn-warning">Ver detalles</a>
+</div>
+
+<!-- Botones para compartir -->
+<div class="text-center">
+    <a href="https://api.whatsapp.com/send?text={{ urlencode($similar->nombre . ' - ' . route('detalles', $similar->id)) }}" target="_blank" class="btn btn-success btn-sm">
+        <i class="bi bi-whatsapp"></i> WhatsApp
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('detalles', $similar->id)) }}" target="_blank" class="btn btn-primary btn-sm">
+        <i class="bi bi-facebook"></i> Facebook
+    </a>
+    <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('detalles', $similar->id)) }}&text={{ urlencode($similar->nombre) }}" target="_blank" class="btn btn-info btn-sm">
+        <i class="bi bi-twitter"></i> Twitter
+    </a>
+</div>
+
                         </div>
                     </div>
                 </div>
