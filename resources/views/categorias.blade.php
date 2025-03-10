@@ -43,7 +43,10 @@
     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('detalles', $similar->id)) }}" target="_blank" class="btn btn-primary btn-sm">
         <i class="bi bi-facebook"></i> Compartir
     </a>
-    
+    <a href="https://www.instagram.com/stories/create/?url={{ urlencode(route('detalles', $similar->id)) }}" target="_blank" class="btn btn-primary btn-sm">
+    <i class="bi bi-instagram"></i> Compartir
+</a>
+
 </div>
 
                         </div>
