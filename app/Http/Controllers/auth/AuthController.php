@@ -46,10 +46,8 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'cedula' => 'required|integer|min:1000000|max:99999999', // Adjusted for 7-8 digits
             'email' => 'required|string|email|max:255|unique:users',
-            'sector' => 'nullable|string|max:255',
-            'calle' => 'nullable|string|max:255',
-            'casa' => 'nullable|string|max:255',
-            'password' => 'required|string|min:8|confirmed', // Ensures password confirmation
+            
+            'password' => 'required|string|confirmed', // Ensures password confirmation
         ]);
 
         // Create the user
@@ -57,9 +55,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'dni' => $request->cedula,
             'email' => $request->email,
-            'sector' => $request->sector,
-            'calle' => $request->calle,
-            'casa' => $request->casa,
+           
             'password' => Hash::make($request->password), // Hash the password
             'status' => 'Activo', // Set the status
         ]);

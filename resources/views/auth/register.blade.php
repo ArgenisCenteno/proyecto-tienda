@@ -29,7 +29,7 @@
                 <label class="form-label"><strong>Cédula de Identidad</strong></label>
                 <input type="text" id="cedula" name="cedula" class="form-control w-100" maxlength="8" required />
                 <p class="text-danger" id="cedulaError" style="display: none;">Cédula inválida.</p>
-                @error('dni') <p class="text-danger">{{ $message }}</p> @enderror
+                @error('cedula') <p class="text-danger">{{ $message }}</p> @enderror
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Número de Teléfono</strong></label>
@@ -44,6 +44,7 @@
                   <input type="text" id="phone" name="phone" class="form-control w-75" maxlength="7" required />
                 </div>
                 <p class="text-danger" id="phoneError" style="display: none;">Teléfono inválido. Debe tener 7 dígitos.</p>
+                @error('phone') <p class="text-danger">{{ $message }}</p> @enderror
               </div>
             </div>
 
@@ -57,6 +58,7 @@
                   </button>
                 </div>
                 <p class="text-danger" id="passwordError" style="display: none;">Debe incluir al menos 1 número y 1 carácter especial.</p>
+                @error('password') <p class="text-danger">{{ $message }}</p> @enderror
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Confirmar Contraseña</strong></label>
@@ -67,6 +69,7 @@
                   </button>
                 </div>
                 <p class="text-danger" id="confirmPasswordError" style="display: none;">Las contraseñas no coinciden.</p>
+                @error('confirm_password') <p class="text-danger">{{ $message }}</p> @enderror
               </div>
             </div>
 
@@ -77,6 +80,7 @@
     </div>
   </div>
 </section>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -109,7 +113,7 @@
         const phonePattern = /^[0-9]{7}$/;
         if (!phonePattern.test(phone.value)) {
             phone.classList.add('is-invalid');
-            phoneError.style.display = 'block';
+            phoneError.style.display = 'block';  
             return false;
         } else {
             phone.classList.remove('is-invalid');

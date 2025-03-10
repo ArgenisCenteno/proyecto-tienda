@@ -37,15 +37,13 @@
 
 <!-- Botones para compartir -->
 <div class="text-center">
-    <a href="https://api.whatsapp.com/send?text={{ urlencode($similar->nombre . ' - ' . route('detalles', $similar->id)) }}" target="_blank" class="btn btn-success btn-sm">
-        <i class="bi bi-whatsapp"></i> WhatsApp
+    <a href="https://api.whatsapp.com/send?text={{ urlencode($similar->nombre . ' - ' . route('detalles', $similar->id)) }}" target="_blank" class="btn btn-info btn-sm">
+        <i class="bi bi-whatsapp"></i> Compartir
     </a>
     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('detalles', $similar->id)) }}" target="_blank" class="btn btn-primary btn-sm">
-        <i class="bi bi-facebook"></i> Facebook
+        <i class="bi bi-facebook"></i> Compartir
     </a>
-    <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('detalles', $similar->id)) }}&text={{ urlencode($similar->nombre) }}" target="_blank" class="btn btn-info btn-sm">
-        <i class="bi bi-twitter"></i> Twitter
-    </a>
+    
 </div>
 
                         </div>
