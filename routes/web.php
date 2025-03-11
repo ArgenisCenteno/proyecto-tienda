@@ -36,6 +36,7 @@ Route::get('/carrito', [CarritoController::class, 'show'])->name('carrito.show')
 Route::post('/carrito/actualizar', [CarritoController::class, 'actualizarCarrito'])->name('carrito.actualizar');
 
 Route::get('/category/{id}', [CarritoController::class, 'productosPorCategoria'])->name('productosPorCategoria');
+Route::get('/subcategory/{id}', [CarritoController::class, 'productosPorSubcategoria'])->name('productosPorSubcategoria');
 
 
 Route::middleware(['auth'])->group(function () {

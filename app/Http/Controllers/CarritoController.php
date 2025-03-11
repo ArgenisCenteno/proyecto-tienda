@@ -166,7 +166,16 @@ class CarritoController extends Controller
         return redirect()->back();
     }
 
+    public function productosPorSubcategoria($categoriaId)
+    {
+        // Encuentra la categoría
+        $categoria = Subcategoria::findOrFail($categoriaId);
 
+        // Obtiene todos los productos de las subcategorías relacionadas
+        $productos = Producto::where('sub_categoria_id', $categoria->id)->get();
+
+        return view('categorias', compact('productos'));
+    }
     public function actualizarCarrito(Request $request)
     {
         $carrito = session()->get('cart');
